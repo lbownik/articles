@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Into the Core of REST - The Deeper, More Generic Nature of REST Architectural Style</title>
 <style>
 body {
@@ -20,7 +21,9 @@ h2 {
     color: #4789a4;
 }
 img {
+    width: 100%;
     max-width: 600px;
+    height: auto;
 }
 figcaption {
     font-style: italic;
@@ -39,12 +42,10 @@ figure img {
 }
 
 .note {
-    line-height: 1.0;
-    color: #808080
+    color: #808080;
 }
 .license {
-    border-top: 2px solid black;
-    border-color: #808080;
+    border-top: 2px solid #808080;
     padding-top: 10px;
 }
 </style>
@@ -61,7 +62,7 @@ figure img {
 defined REST (Representational State Transfer) as an "architectural style for 
 distributed hypermedia systems" defining it as 
 <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_8">Layered-Code-on-Demand-Client-Cache-Stateless-Server with Unified-Interface</a>. 
-The articles describing this style available on the Web always define REST in 
+Articles describing this style available on the Web always define REST in 
 the context of "RESTful web services" where HTTP is used to manipulate a myriad 
 of URL addressable resources. But after really giving it a thought, one realizes 
 that RESTful web services are only an application of REST as 
@@ -69,19 +70,17 @@ an architectural style and the style itself has a deeper, simpler, hidden nature
 
 <h2>Core of REST</h2>
 <p>To uncover the hidden nature of the Representational State Transfer style, let’s dissect its name backward.</p>
-<p>The word <b>transfer</b> implies that there are at least two processes communicating through some medium which implies a distributed system.</p>
-<p>The word <b>state</b> means that one process of a distributed system transfers 
+<p>The word <strong>transfer</strong> implies that there are at least two processes communicating through some medium which implies a distributed system.</p>
+<p>The word <strong>state</strong> means that one process of a distributed system transfers 
 its internal "view of the (surrounding) world" to another process. 
-This ‘internal view of the world" is all the relevant information required by the 
+This "internal view of the world" is all the relevant information required by the 
 process to do its duty (see Figure 1). It contains both information gathered 
-from the environment and the one generated internally and is expressed by <b>nouns</b>.</p>
-<p>
+from the environment and the one generated internally and is expressed by <strong>nouns</strong>.</p>
 <figure>
 <img src="view_of_the_world.png" alt="View of the world"/>
 <figcaption>Figure 1. The process embedded within its environment and containing an "internal view of the (surrounding) world".</figcaption>
 </figure>
-</p>
-<p>The word <b>representational</b> means that processes do not literally send 
+<p>The word <strong>representational</strong> means that processes do not literally send 
 their "internal views of the world" but encode them into descriptions (representations) 
 understandable by recipients. Representation hides the internal nature (implementation) 
 of the process's internal state.</p>
@@ -96,15 +95,13 @@ the recipient perform any action it sees required (see Figure 2). This means
 that the sender assumes some reaction to the state being sent but does not 
 demand concrete actions leaving this decision to the recipient. This results 
 in a distribution of control between processes and loosening of coupling.</p>
-<p>
 <figure>
 <img src="REST_vs_RPC.png" alt="REST vs RPC"/>
 <figcaption>Figure 2. RPC (top) versus REST (bottom) communication style.</figcaption>
 </figure>
-</p>
 <p>In order to achieve successful communication, a "view of the world" transferred 
 needs to be complete from a recipient perspective. This means that every message 
-needs to be <b>self-contained</b>, carrying enough information to be processed 
+needs to be <strong>self-contained</strong>, carrying enough information to be processed 
 independently from any other message sent before or after. This, in turn, implies 
 context-free interaction as no interaction context (like expected message sequence number)
  needs to be maintained by any communication process (I’ll use "context-free" 
@@ -115,22 +112,18 @@ context-free interaction as no interaction context (like expected message sequen
 controlled valve connected to a SCADA system (Figure 3) through a communication 
 link. The valve can be placed in any position between 0 (totally closed) or
 100 (totally opened).</p>
-<p>
 <figure>
 <img src="valve_example.png" alt="valve example"/>
 <figcaption>Figure 3. The electronically controlled valve connected to a SCADA system.</figcaption>
 </figure>
-</p>
 <p>The electronic valve controller periodically sends a single byte message 
 through the communication link (messages 1,3,4,5 on Figure 4) denoting the 
 current valve position. It also accepts a single-byte message denoting a 
 target valve position (messages 2 and 5 in Figure 4).</p>
-<p>
 <figure>
 <img src="valve_messages_unsolicited.png" alt="valve messages unsolicited"/>
 <figcaption>Figure 4. The example message sequence between RESTful processes – unsolicited messages model.</figcaption>
 </figure>
-</p>
 <p>The single byte containing a valve position is a complete "internal view of the world" 
 of the valve controller. When the controller sends the message, it does not assume 
 any particular action from the SCADA system, it merely advertises its state. 
@@ -140,12 +133,10 @@ either as the controller is free to undertake any action it sees feasible
 In Figure 4, the controller accepts the state it receives and moves the valve 
 appropriately informing periodically about the new current position of a valve.</p>
 <p>The RESTful style is equally applicable to request-response model depicted on Figure 5.</p>
-<p>
 <figure>
 <img src="valve_messages_req_resp.png" alt="valve messages req resp"/>
 <figcaption>Figure 5. The example message sequence between RESTful processes - the request-response model.</figcaption>
 </figure>
-</p>
 <p>The most important implication of REST is that it is a valve controller’s duty to 
 find out how to move from one state to another as the SCADA system does not have a clue. 
 The SCADA system might be even blind enough not to process the messages received from the controller.
@@ -153,23 +144,21 @@ The SCADA system might be even blind enough not to process the messages received
  assuming that this is actually the only "true truth" and the controller needs to deal with this fact.</p>
  <p>By contrast, Figure 6 shows the same processes communicating in an RPC style 
  where the SCADA system is fully responsible for managing the controller’s internal state explicitly.</p>
-<p>
 <figure>
-<img src="valve_messages_rpc.png" alt="valv emessages rpc"/>
+<img src="valve_messages_rpc.png" alt="valve emessages rpc"/>
 <figcaption>Figure 6. The example message sequence diagram between processes communicating via RPC.</figcaption>
 </figure>
-</p>
 
 <h2>Safety and Idempotence</h2>
 <p>The example illustrates another two rules of REST. The first states, that 
-reading or receiving state of another process is a <b>safe</b> operation which 
-means that it does not trigger a change of the <b>visible state</b> of that process.
- A visible is state observable by any subsequent interaction with this process 
+reading or receiving state of another process is a <strong>safe</strong> operation which 
+means that it does not trigger a change of the <strong>visible state</strong> of that process.
+ A visible state is state observable by any subsequent interaction with this process 
  performed by system business logic. A safe operation may change an invisible 
  state of a remote process by for example generating log entries. 
  The second rule is that sending a state to a remote process is an 
- <a href="https://en.wikipedia.org/wiki/Idempotence"><b>idempotent</b></a> 
- operation which means that sending <b>the same state</b> more than once causes 
+ <a href="https://en.wikipedia.org/wiki/Idempotence"><strong>idempotent</strong></a> 
+ operation which means that sending <strong>the same state</strong> more than once causes 
  the same effect as if the state was sent exactly once (note that message 5 in 
  Figure 4 causes no effect). 
  This is in contrast with RPC style which does not impose such behavior. 
@@ -198,13 +187,11 @@ means that it does not trigger a change of the <b>visible state</b> of that proc
  if the whole relevant state is transferred within a single message 
  (see Figure 7 bottom). In such a case, a classic locking or queuing mechanism 
  is enough to efficiently serialize operations.</p>
- <p>
 <figure>
 <img src="read_transaction.png" alt="read transaction"/>
 <figcaption>Figure 7. RPC (top) vs RESTful (bottom) read. Concurrent state 
 modifications can be postponed in a much more resource-efficient way in a RESTful approach.</figcaption>
 </figure>
-</p>
  
 <h2>Write Transactions</h2>
 <p>The same as with transactional read, an RPC style transactional write requires 
@@ -218,10 +205,9 @@ the sender can simply resend the message again because of the idempotent behavio
 of a recipient.</p>
 <figure>
 <img src="write_transaction.png" alt="write transaction"/>
-<figcaption>Figure 8 RPC (top) vs RESTful (bottom) write. Concurrent state 
+<figcaption>Figure 8. RPC (top) vs RESTful (bottom) write. Concurrent state 
 modifications can be postponed in a much more resource-efficient way in a RESTful approach.</figcaption>
 </figure>
-</p>
  
 <h2>State Patching</h2>
 <p>Sending the entire state within a single message is the simplest and preferable 
@@ -229,7 +215,7 @@ solution but often inefficient due to a large amount of data that needs to be
 sent over the wire. The inefficiency is especially noticeable when a modified 
 portion of the state is small compared to a whole state. In order to deal with 
 that, a state partitioning mechanism needs to be implemented. If chunks of the 
-state are <b>uniquely identifiable</b> (eg. by name, or index), then only the 
+state are <strong>uniquely identifiable</strong> (eg. by name, or index), then only the 
 changes to the state (patches) need to be transferred.</p>
 <p>To illustrate this, let’s assume that our electronic valve controller controls 
 not one but a thousand valves, and a SCADA system communicates with it in a 
@@ -238,12 +224,10 @@ and the controller responses with a vector of &lt;valve number, position&gt; pai
 The controller also accepts a vector of pairs from SCADA system and sets the 
 positions of specified valves accordingly (see Figure 9). This way, 
 the SCADA system can read or write only positions of valves it is interested in.</p>
-<p>
 <figure>
 <img src="valve_messages_state_patching.png" alt="valve messages state patching"/>
 <figcaption>Figure 9. State patching with named parts of state.</figcaption>
 </figure>
-</p>
 <p>State patching may be transactional in the way that was described before. 
 The only requirement is to transfer the complete set of patches within a 
 single message to leverage the idempotence.</p>
@@ -257,12 +241,10 @@ the PC sends it a new state (modified by user) with Song2 missing and Songs
 4 and 5 extra. In response to that, the player adjusts its internal state to 
 the one described by received representation by downloading songs 4 and 5 and 
 deleting song 2.</p>
-<p>
 <figure>
 <img src="music_player_example.png" alt="music player example"/>
 <figcaption>Figure 10. Variable size state use case.</figcaption>
 </figure>
-</p>
 <p>This example nicely illustrates the difference between an internal state of
 a process and a representation of this state. The internal state of a music player
 is a set of audio files but its representation is a set of song names.</p>
@@ -273,36 +255,32 @@ of songs grows to thousands, it may be inefficient to send the entire collection
 of titles there and back again every time. Instead of that, only the differences 
 between PC’s and player’s state may be sent. Introduction of metadata describing 
 the NEW, MODIFIED and MISSING songs solves the issue (see Figure 11). 
-It is important to note that the NEW, MODIFIED and MISSING tags are <b>adjectives</b> 
+It is important to note that the NEW, MODIFIED and MISSING tags are <strong>adjectives</strong> 
 describing "timeliness" of state chunks and not verbs ordering a recipient to add, 
 update or delete.</p>
-<p>
 <figure>
 <img src="music_player_state_patching.png" alt="music player state patching"/>
 <figcaption>Figure 11. Variable state patching with nouns.</figcaption>
 </figure>
-</p>
 <p>A PC sends a message describing differences of a music player’s state in a 
 similar manner as the diff UNIX utility describes the set of modifications within 
 a text file. The write message is self-contained and can be processed in an idempotent way.</p>
 
 <h2>Conclusion</h2>
 <p>To summarize, the core idea of REST is to <i>transfer representations of 
-"internal view of the world" given as <b>nouns</b> within self-contained messages 
+"internal view of the world" given as <strong>nouns</strong> within self-contained messages 
 in a conversation context-free manner so that they can be processed by a recipient 
-in an idempotent manner with state patching expressed as <b>adjectives</b> as an optimization</i> 
+in an idempotent manner with state patching expressed as <strong>adjectives</strong> as an optimization</i> 
 (see Figure 12). The advantages are distribution of control, 
 loose coupling and simplified transaction processing comparing to RPC 
 (which uses nouns for data and verbs for operations). The disadvantages of RESTful 
 communication are (often) more bandwidth consumption and more burden placed on 
 recipient, as is the recipient’s duty to deduct the proper sequence of actions to 
-adapt form its current internal state to the new, expected one.</p>
-<p>
+adapt from its current internal state to the new, expected one.</p>
 <figure>
 <img src="parts_of_rest.png" alt="parts of rest"/>
 <figcaption>Figure 12. Rules of REST.</figcaption>
 </figure>
-</p>
 <p>The most important conclusion of this text is that REST as an architectural 
 style is not tied to the particular communication protocol. It can be realized 
 for example at middleware level via the messaging service, at an application level 
@@ -314,11 +292,12 @@ I let the reader map the concepts described within this article into the HTTP pr
  I explain why bare HTTP protocol is not fully RESTful and show an example of a fully RESTful protocol.</p>
 
 <p class="license">
-Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Provided under <a rel="license" data-spdx="CC-BY-4.0"
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
 href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
-<a rel="license" data-spdx="CC-BY-4.0" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
-<img alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
 </p>
+</body>
 </html>
 
 
