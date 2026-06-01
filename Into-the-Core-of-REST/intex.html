@@ -41,22 +41,28 @@ figure img {
     font-style: italic;
 }
 
-.note {
+header {
     color: #808080;
 }
-.license {
+footer {
     border-top: 2px solid #808080;
     padding-top: 10px;
 }
 </style>
 </head>
 <body>
-<p class="note">Originally posted on CodeProject on 4 Mar 2020</p>
+<header>
+<p>Originally posted on CodeProject on 4 Mar 2020</p>
+</header>
+<main>
+<article>
 
+<section>
 <h1>Into the Core of REST - The Deeper, More Generic Nature of REST Architectural Style</h1>
-
 <p class="summary">The article tries to distill a deeper, more generic nature of REST architectural style not tied to web services.</p>
+</section>
 
+<section>
 <h2>Introduction</h2>
 <p>Roy Fielding in <a href="https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">his dissertation</a> 
 defined REST (Representational State Transfer) as an "architectural style for 
@@ -67,7 +73,9 @@ the context of "RESTful web services" where HTTP is used to manipulate a myriad
 of URL addressable resources. But after really giving it a thought, one realizes 
 that RESTful web services are only an application of REST as 
 an architectural style and the style itself has a deeper, simpler, hidden nature I’ll try to uncover here.</p>
+</section>
 
+<section>
 <h2>Core of REST</h2>
 <p>To uncover the hidden nature of the Representational State Transfer style, let’s dissect its name backward.</p>
 <p>The word <strong>transfer</strong> implies that there are at least two processes communicating through some medium which implies a distributed system.</p>
@@ -84,7 +92,9 @@ from the environment and the one generated internally and is expressed by <stron
 their "internal views of the world" but encode them into descriptions (representations) 
 understandable by recipients. Representation hides the internal nature (implementation) 
 of the process's internal state.</p>
+</section>
 
+<section>
 <h2>State vs Commands</h2>
 <p>A transfer of state differs from transferring commands as it does not imply 
 any concrete behavior of a recipient. If the sender transfers commands 
@@ -106,7 +116,9 @@ independently from any other message sent before or after. This, in turn, implie
 context-free interaction as no interaction context (like expected message sequence number)
  needs to be maintained by any communication process (I’ll use "context-free" 
  instead of "stateless" to avoid confusion).</p>
+</section>
 
+<section>
 <h2>Valve Example</h2>
 <p>To clarify what has been said, let’s use an example of an electronically 
 controlled valve connected to a SCADA system (Figure 3) through a communication 
@@ -148,7 +160,9 @@ The SCADA system might be even blind enough not to process the messages received
 <img src="valve_messages_rpc.png" alt="valve emessages rpc"/>
 <figcaption>Figure 6. The example message sequence diagram between processes communicating via RPC.</figcaption>
 </figure>
+</section>
 
+<section>
 <h2>Safety and Idempotence</h2>
 <p>The example illustrates another two rules of REST. The first states, that 
 reading or receiving state of another process is a <strong>safe</strong> operation which 
@@ -163,7 +177,9 @@ means that it does not trigger a change of the <strong>visible state</strong> of
  Figure 4 causes no effect). 
  This is in contrast with RPC style which does not impose such behavior. 
  It is worth mentioning that all safe operations are idempotent by definition.</p>
- 
+</section>
+
+<section>
  <h2>REST = Simple Transactions</h2>
  <p>Summarizing what has been written so far, a RESTful protocol is composed of 
  messages that transfer the complete state of a sender relevant to message 
@@ -172,7 +188,9 @@ means that it does not trigger a change of the <strong>visible state</strong> of
  The advantage of such an approach, besides loose coupling, is the simplicity 
  and efficiency of implementing 
  <a href="https://en.wikipedia.org/wiki/Transaction_processing">transactional operations</a>.</p>
- 
+</section>
+
+<section>
  <h2>Read Transactions</h2>
  <p>Transactional RPC style read is achieved when consecutive reads of parts of 
  remote process’s state enclosed within one "conversation" return a coherent 
@@ -192,7 +210,9 @@ means that it does not trigger a change of the <strong>visible state</strong> of
 <figcaption>Figure 7. RPC (top) vs RESTful (bottom) read. Concurrent state 
 modifications can be postponed in a much more resource-efficient way in a RESTful approach.</figcaption>
 </figure>
- 
+</section>
+
+<section>
 <h2>Write Transactions</h2>
 <p>The same as with transactional read, an RPC style transactional write requires 
 a chatty conversation with two-phase or three-phase transaction commit in the 
@@ -208,7 +228,9 @@ of a recipient.</p>
 <figcaption>Figure 8. RPC (top) vs RESTful (bottom) write. Concurrent state 
 modifications can be postponed in a much more resource-efficient way in a RESTful approach.</figcaption>
 </figure>
- 
+</section>
+
+<section>
 <h2>State Patching</h2>
 <p>Sending the entire state within a single message is the simplest and preferable 
 solution but often inefficient due to a large amount of data that needs to be 
@@ -231,7 +253,9 @@ the SCADA system can read or write only positions of valves it is interested in.
 <p>State patching may be transactional in the way that was described before. 
 The only requirement is to transfer the complete set of patches within a 
 single message to leverage the idempotence.</p>
+</section>
 
+<section>
 <h2>State Scope Change</h2>
 <p>In the two "valve examples", only fixed-size states have been used, but the
 RESTful approach is also suitable for variable size state use cases. 
@@ -248,7 +272,9 @@ deleting song 2.</p>
 <p>This example nicely illustrates the difference between an internal state of
 a process and a representation of this state. The internal state of a music player
 is a set of audio files but its representation is a set of song names.</p>
+</section>
 
+<section>
 <h2>Patching Variable Size State</h2>
 <p>The player example works fine if the song collection is small but if the number 
 of songs grows to thousands, it may be inefficient to send the entire collection 
@@ -265,7 +291,9 @@ update or delete.</p>
 <p>A PC sends a message describing differences of a music player’s state in a 
 similar manner as the diff UNIX utility describes the set of modifications within 
 a text file. The write message is self-contained and can be processed in an idempotent way.</p>
+</section>
 
+<section>
 <h2>Conclusion</h2>
 <p>To summarize, the core idea of REST is to <i>transfer representations of 
 "internal view of the world" given as <strong>nouns</strong> within self-contained messages 
@@ -289,14 +317,19 @@ The most popular (and to be honest not very accurate) is the realization via HTT
 protocol known as <a href="https://www.tutorialspoint.com/restful/index.htm">"restful web services"</a>.
 I let the reader map the concepts described within this article into the HTTP protocol.</p>
 <p><strong>NOTE</strong>: In the following article,&nbsp;<a href="https://web.archive.org/web/20250208171532/https://www.codeproject.com/Articles/1214537/Bare-HTTP-is-Not-Fully-RESTful">Bare HTTP is Not Fully RESTful</a>,
- I explain why bare HTTP protocol is not fully RESTful and show an example of a fully RESTful protocol.</p>
+I explain why bare HTTP protocol is not fully RESTful and show an example of a fully RESTful protocol.</p>
+</section>
 
-<p class="license">
+</article>
+</main>
+<footer>
+<p>
 Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
 href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
 <a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
 <img style="width: auto;" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
 </p>
+</footer>
 </body>
 </html>
 
