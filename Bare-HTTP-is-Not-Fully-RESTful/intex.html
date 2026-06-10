@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bare HTTP is Not Fully RESTful - A Deeper Look at REST Architectural Style 
+and How HTTP Shows Protocol Deficiencies</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+
+header {
+    color: #808080;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject</p>
+</header>
+<main>
+<article>
+
+<section>
+<h1>Bare HTTP is Not Fully RESTful - A Deeper Look at REST Architectural Style 
+and How HTTP Shows Protocol Deficiencies</h1>
+<p class="summary">The article tries to map a deeper, more generic nature of REST 
+architectural style into HTTP to show protocol deficiencies.</p>
+</section>
+
+<section>
+<h2>Introduction</h2>
+<p>In my previous <strong><a href="https://lbownik.github.io/articles/Into-the-Core-of-REST/intex.html">article</a></strong> 
+(please read it first), I tried to describe how I understand the REST architectural
+style irrespectively of any communication protocol.</p>
+</section>
+<section>
+<h2>Mapping Core of REST</h2>
+<p>Looking for the generalization I have defined the core of REST as a set of 
+concepts consisting of transfer, state, representations, safety, and idempotence.</p>
+<p>Transferring state using representations maps easily into HTTP. 
+As HTTP demands a request-response communication model, verbs, describing 
+commands, have been introduced to tell the requests demanding data from 
+requests providing data apart. These verbs are <code>GET</code> and <code>PUT</code> 
+(or <code>POST</code>). This already introduces some kind of RPC into the 
+picture but does not break REST yet. HTTP can carry any data so applications 
+are free to construct their representations. Figure 1 shows a music player 
+example using HTTP with a textual representation.</p>
+<figure>
+<img src="music_player.png" alt="music player"/>
+<figcaption>Figure 1. Music player state transfer using HTTP.</figcaption>
+</figure>
+<p>According to the HTTP standard, <code>GET</code> is supposed to be a safe
+operation and <code>PUT</code> is supposed to be idempotent.
+Stating that, the core of REST can be mapped into HTTP.</p>
+</section>
+<section>
+<h2>Mapping State Patching</h2>
+<p>In order to use state patching technique which is an inevitable optimization
+in real applications where the state is most often huge, there needs to be a
+possibility to uniquely identify state chunks. HTTP uses URIs for that purpose
+calling addressable state chunks "resources". Figure 2 shows an example of
+reading and writing a state chunk.</p>
+<figure>
+<img src="addressable_state.png" alt="addressable state"/>
+<figcaption>Figure 2. Reading/writing state chunk (resource) using URI.</figcaption>
+</figure>
+<p>The problem occurs while transferring multiple chunks in a transactional manner.</p>
+</section>
+<section>
+<h2>Transactional Read</h2>
+<p>In order to read multiple state chunks (resources) transitionally, all of
+them need to be requested by the client in one self-contained message and then
+sent by the server in another self-contained message. This is possible only
+if we can construct a URL encompassing all of the requested resources (for example,
+addressing a group of resources), as HTTP itself does not support multiple URIs
+within a single <code>GET</code> request (see Figure 3). A similar situation
+applies to the response message, as there is no way to send multiple resources
+along with their URIs back to client within a single HTTP response message.
+It is possible to use a <code>POST</code> request with some artificial URI not
+related to any resource and a payload-carrying a list of requested URIs.
+It is also possible to forge response with representation containing a list of
+all requested resources along with their URIs, but such a solution constitutes a
+new "inner protocol" that merely uses HTTP as a transport mechanism breaking
+layer isolation along the way.</p>
+<figure>
+<img src="transactional_read.png" alt="transactional read"/>
+<figcaption>Figure 3. Reading/writing multiple resources is not supported by bare HTTP.</figcaption>
+</figure>
+</section>
+<section>
+<h2>Transactional Write</h2>
+<p>The same as with transactional read, a transactional write of multiple
+unrelated chunks of state is not supported by bare HTTP. <code>PUT</code> or
+<code>POST</code> requests support neither multiple URIs and representations
+within a single HTTP request message nor multiple status codes within a single
+HTTP response message. It is true that <code>POST</code> supports multipart
+payload but all of those parts are addressed to a single URI, so it is only
+a partial, not satisfying solution (it is possible to correlate each part of
+a multipart message with a UIR by extending HTTP with non-standard headers though).</p>
+</section>
+<section>
+<h2>Patching Variable State</h2>
+<p>In the previous article, I described how RESTful patching of variable state
+can be achieved by the introduction of metadata denoting "timelines" of state
+chunks. This can be only partially mapped to HTTP. The NEW and MODIFIED
+<b>adjectives</b> can be (semantically incorrectly) mapped into the
+<code>PUT</code> <b>verb</b>, which behaves differently whether a target resource
+exists or not. The <code>MISSING</code> <b>adjective</b> can be mapped into a
+<code>DELETE</code> <b>verb</b>. The server should react to <code>PUT</code> and
+<code>DELETE</code> in an idempotent. The problem is that patching a variable
+state of multiple unrelated resources where some of them are <code>NEW</code>,
+some <code>MODIFIED</code>, and some missing is not supported by HTTP as only
+one verb is allowed within a single message (see Figure 4).</p>
+<figure>
+<img src="variable_state.png" alt="variable state"/>
+<figcaption>Figure 4. The patching variable state is not supported by HTTP.</figcaption>
+</figure>
+</section>
+<section>
+<h2>Conclusion</h2>
+<p>HTTP is a good protocol that serves its purpose well. It gave birth to REST
+and was influenced by it, but it is not 100% RESTful (it is actually an RPC that
+RESTful behavior can be built upon). People have tried to work around these
+deficiencies by designing clever URIs and representations, breaking layer
+isolation along the way
+(see this <a href="http://shop.oreilly.com/product/9780596801694.do">book</a> 
+for some recipes), but in the end, the bare 100% standard HTTP cannot provide
+true RESTful communication except cases when "the whole" state gets transferred every time.</p>
+</section>
+<section>
+<h2>Appendix: How a True RESTful Protocol Should Look Like</h2>
+<p>A truly RESTful protocol covering all exemplified use cases may use any
+transport it sees suitable but shall define massages as follows:</p>
+<ul>
+<li>Message type: enumeration (<code>REQUEST</code>, <code>DATA</code>, <code>ACKNOWLEDGEMENT</code>) – to discern message type (not every message type needs to be used)</li>
+<li>For <code>REQUEST</code> type:
+    <ul>
+        <li>List of unique chunk identifiers: there can be a special identifier 
+            for "entire state" like "<code>/</code>" or <code>NULL</code>; 
+            URI is a good candidate but not the only one</li>    
+    </ul>
+    </li>  
+        <li>For <code>DATA</code> type:
+    <ul>
+        <li>List of state chunks:
+        <ul>
+            <li>For every chunk:
+            <ul>
+                <li>Chunk identifier;</li>
+                <li>Chunk "timeliness" tag: enumeration (<code>NEW</code>, 
+                    <code>MODIFIED</code>, <code>MISSING</code>, <code>CURRENT</code>);</li>
+                    <li>Chunk representation: any data format;</li>
+            </ul>
+            </li>
+        </ul>
+        </li>   
+    </ul>
+    </li>  
+         <li>For <code>ACKNOWLEDGEMENT</code> type:
+    <ul>
+        <li>Success/error code.</li>
+    </ul>
+    </li>
+</ul>
+<p>Figure 5 shows an example of message exchange of a proposed protocol.</p>
+<figure>
+<img src="example.png" alt="example"/>
+<figcaption>Figure 5. RESTful protocol example.</figcaption>
+</figure>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
