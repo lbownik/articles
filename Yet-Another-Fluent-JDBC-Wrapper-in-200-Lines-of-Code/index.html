@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yet Another Fluent JDBC Wrapper in 200 Lines of Code</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+pre {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffe8;
+}
+code {
+    color: #905;
+}
+header {
+    color: #808080;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject</p>
+</header>
+<main>
+<article>
+<section>
+<h1>Yet Another Fluent JDBC Wrapper in 200 Lines of Code</h1>
+<p class="summary">The goal of this post is to create a fluent JDBC wrapper, 
+that streamlines 80% of JDBC use cases, in just a single source file. 
+The wrapper uses static imports, fluent method chaining, with implicit 
+parameter index incrementation and functional interfaces which allow lambda 
+expression as parameters to andMap, andReduse and forEach methods.</p>
+</section>
+<section>
+<h2>Introduction</h2>
+<p>Those who are not convinced to use Hibernate to manage persistence are forced
+to use plain old JDBC API. Though powerful, it requires a lot of typing to get
+it right. For example, retrieving user data from a database often requires
+such code snippet:</p>
+<pre><code>final List&lt;User&gt; result = new ArrayList&lt;&gt;();
+final PreparedStatement s = 
+        conn.prepareStatement("select name, password from user where name = ?");
+try {
+   s.setString(1, "adam");
+   final ResultSet rs = s.executeQuery();
+   try {
+      result.add(new User(rs.getString(1), rs.getString(2)));
+   } finally {
+      rs.close();
+   }
+} finally {
+   s.close();
+}
+</code></pre>
+<p>With Java 7’s try-with-resources, this code is a little shorter:</p>
+<pre><code>final List&lt;User&gt; list = new ArrayList&lt;&gt;();
+try (final PreparedStatement s = c.prepareStatement
+  ("select name, password from users where name = ?")) {
+    s.setString(1, "adam");
+    try (final ResultSet rs = s.executeQuery()) {
+        list.add(new User(rs.getString(1), rs.getString(2)));
+    }
+}
+</code></pre>
+<p>Even though it is progress, it is not what most would describe as "elegant".
+With Java 8’s lambda expressions and fluent API pattern, it can be minimized
+to so-called "one-liner" that looks something like this:</p>
+<pre><code>final List&lt;User&gt; list2 = using(c).prepare("select name, password from users where name = ?").
+  set("Adam").andMap(rs -> new User(rs.getString(1), rs.getString(2)));
+</code></pre>
+</section>
+<section>
+<h2>Goal</h2>
+<p>There are numerous approaches to this (<a href="http://jdbc.jcabi.com/">jcabi-jdbc</a>,
+<a href="https://github.com/zsoltherpai/fluent-jdbc">fluent-jdbc</a>,
+<a href="https://github.com/soulwing/fluent-jdbc">fluent-jdbc</a>,
+<a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html">JdbcTemplate</a>, …),
+but all of them seem a little "big". The goal of this version was a simple one.</p>
+<p><i>Create a fluent JDBC wrapper, that streamlines 80% of JDBC use cases, in just a single source file.</i></p>
+<p>The result is&nbsp;<b>200 lines of code</b> (after stripping comments and
+blank lines) that allow you to express the most common JDBC use case in a compact way.</p>
+</section>
+<section>
+<h2>Usage</h2>
+<p>The wrapper uses static imports (in the form of
+<code>import static fluentJDBC.FluentConnection.*;</code>), fluent method
+chaining, with implicit parameter index incrementation and functional interfaces
+which allow lambda expression as parameters to <code>andMap</code>,
+<code>andReduse</code> and <code>forEach</code> methods.
+The examples of <code>FluentConnection</code> usage are listed below:</p>
+<pre><code>Connection c = null; // we surely should have initialized this :)
+
+//FluentJDBC - single value retrieval
+Optional&lt;User&gt; user = using(c).prepare("select name, password from users where name = ?").
+    set("Adam").andMapOne(rs -> new User(rs.getString(1), rs.getString(2)));
+
+//FluentJDBC - result printing
+using(c).prepare("select name, password from users where name = ?").
+    set("Adam").andForEach(rs -> System.out.println(rs.getString(1)));
+
+// FluentJDBC - aggregation in application - inefficient example
+String str = using(c).prepare("select name, password from users where name = ?").
+    set("Adam").andReduce("", (acc, rs) -> acc + "name: " + rs.getString(1));
+
+//FluentJDBC - insertion (works for modification and deletion as well)
+using(c).prepare("insert into users values (?,?,?)").set(1).set("Adam").
+    set("password").andUpdate();
+
+//FluentJDBC - insertion returning autogenerated primary key
+Integer id = (Integer) using(c).
+    prepareWithKey("insert into users(name, password) values (?,?)").
+    set("Adam").set("secret").andUpdateReturningKey();
+
+//FluentJDBC - custom parameter setting code
+using(c).prepare("insert into users values (?,?,?)").set(1).set("Adam").
+    set((s, index) -> s.setString(index, "secret")).andUpdate();
+
+//FluentJDBC - custom PreparedStatement modification
+using(c).prepare("insert into users values (?,?,?)").set(1).
+    set("Adam").set("password").
+    apply((s) -> s.setCursorName("c1")).andUpdate();
+</code></pre>
+<p><a href="https://github.com/lbownik/fluentjdbc">This project</a> is a BSD
+licensed, single file (<a href="https://github.com/lbownik/fluentjdbc/blob/master/src/fluentJDBC/FluentConnection.java">FluentConnection.java</a>),
+lightweight wrapper that you can include in your project and use. It is by no
+means a complete JDBC wrapper, but I encourage you to extend it to meet your own needs.</p>
+<p>NOTE: You might be interested in another concept of mine related to relational
+databases:&nbsp;<a href="https://lbownik.github.io/articles/Relational-Database-Schema-Versioning-in-55-Lines-of-Code/" title="Relational Database Schema Versioning in 55 Lines of Code">Relational Database Schema Versioning in 55 Lines of Code</a>.</p>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" aria-hidden="true" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
