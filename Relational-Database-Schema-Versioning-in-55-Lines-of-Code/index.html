@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relational Database Schema Versioning in 55 Lines of Code</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+pre {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffe8;
+}
+code {
+    color: #905;
+}
+header {
+    color: #808080;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject</p>
+</header>
+<main>
+<article>
+<section>
+<h1>Relational Database Schema Versioning in 55 Lines of Code</h1>
+</section>
+<section>
+<h2>Introduction</h2>
+<p>The database schema versioning is a problem often thought of last during the
+implementation of database-backed applications (like web applications or
+micro services). Sometimes, even the <a href="https://odetocode.com/blogs/scott/archive/2008/01/30/three-rules-for-database-work.aspx">basic rules</a> get broken. 
+The application code gets carefully versioned under version control, but the
+database schema versioning is neglected. Database creation scripts dumped
+from an ERD tool get stuffed into <a href="https://odetocode.com/blogs/scott/archive/2008/01/31/versioning-databases-the-baseline.aspx">code repository</a> 
+in the hope that this is enough. More advanced teams provide <a href="https://odetocode.com/blogs/scott/archive/2008/02/02/versioning-databases-change-scripts.aspx">delta scripts</a>
+used to upgrade the production databases, which are already populated with data,
+and cannot be simply dropped and recreated from scratch. Often, the database
+schema upgrade record is being tracked manually within tools like Jira,
+MS Excel or just plain text file lying on DBAs desktop.
+These approaches are neither repeatable nor reliable.</p>
+</section>
+<section>
+<h2>Solution</h2>
+<p>On the internet, one can find solutions for managing database schema
+modification DDL scripts like
+<a href="https://flywaydb.org/">flywaydb.org</a>. These tools are fine but they
+impose complexity into the building process. The proposed solution, on the other
+hand, is more a convention than code and assumes that one:</p>
+<ul>
+<li>keeps all database creation and modification DDL statements as a set of 
+functions expressed in a programming language;</li>
+<li>uses a separate database table to keep track of schema versions;</li>
+<li>forces the application to check schema version at startup and makes it fail
+to start if mismatch gets detected;</li>
+<li>provides the application with a distinguished runtime mode (denoted for
+example by command line parameter) to upgrade the database schema.</li>
+</ul>
+</section>
+<section>
+<h2>Implementation</h2>
+<p>The proposed solution has been implemented as a BSD licensed micro-library
+called "<a href="https://github.com/lbownik/schemaupgrader">schemaupgrader</a>".
+The library consists of a single source file
+<a href="https://github.com/lbownik/schemaupgrader/blob/master/src/schemaupgrader/SchemaUpgrader.java">SchemaUpgrader.java</a>
+(55 lines of code excluding comments and blank lines) which provides two
+<code>static</code> functions:</p>
+<ul>
+<li><code>getVersionOf</code> - which returns the current version of a database schema, and</li>
+<li><code>upgradeVersion</code> - which upgrades database schema to a provided 
+version and handles version tracking in a designated table called "<code>versions</code>".</li>
+</ul>
+<p>The following code snippet shows proper application of these functions.</p>
+<pre><code>import java.sql.Connection;
+import static schemaupgrader.SchemaUpgrader.*;
+import static java.util.Arrays.asList;
+
+public class Main {
+
+   private final static int EXPECTED_DB_VERSION = 1;
+   /****************************************************************************
+    *
+    ***************************************************************************/
+   public static void main(String[] args) throws Exception {
+
+      finalJDBCDataSource ds = null; // I surely should have initialized this
+
+      try (final Connection c = ds.getConnection()) {
+         if (asList(args).contains("upgradeDB")) {
+            upgradeVersion(c, EXPECTED_DB_VERSION, DatabaseVersions::build);
+         } else if (getVersionOf(c) != EXPECTED_DB_VERSION) {
+            throw new AssertionError("Database version mismatch.");
+         }
+      }
+      //rest of the application logic here
+   }
+}
+</code></pre>
+<p>As has been stated before, the main idea is to <b>check the version of the
+database schema first</b> and <b>exit an application if the version does not
+match the expected one</b>. Alternatively, an upgrade of the application happens
+if a special command-line switch is provided. The schema upgrade may be also
+called from an alternative application entry point (another class with
+"<code>main</code>" function) or an entirely separate application if many
+applications share the same database.</p>
+<p>In order to perform the actual schema changes, the <code>upgradeSchema</code>
+function requires a pointer to a builder function that is able to build the
+requested schema version by applying the set of changes to the previous one.
+The implementation is totally up to the developer, but for clarity, it is
+important to keep every version "patch" in a separate function. The example
+implementation may look like the following (to issue SQL commands, I used another
+micro-library of mine that can be found <a href="https://github.com/lbownik/fluentjdbc">here</a>
+but it is not mandatory).</p>
+<pre><code>import java.sql.Connection;
+import static fluentJDBC.FluentConnection.using;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
+public final class DatabaseVersions {
+   /****************************************************************************
+    *
+    ***************************************************************************/
+   public static void build(final Connection c, final int version)
+         throws Exception {
+
+      switch (version) {
+         case 1:
+            v1_createUsersTable(c);
+            return;
+         case 2:
+            v2_createLogsTable(c);
+            return;
+         case 3:
+            v3_trimUserNames(c);
+            return;
+      }
+   }
+   /****************************************************************************
+    * 
+    ***************************************************************************/
+   static void v1_createUsersTable(final Connection c) throws SQLException {
+
+      try (final Statement s = c.createStatement()) {
+         s.execute("create table users(name varchar(20) primary key, pass varchar(20))");
+         s.execute("insert into users values('\ta', 'b')");
+      }
+   }
+   /****************************************************************************
+    *
+    ***************************************************************************/
+   static void v2_createLogsTable(final Connection c) throws SQLException {
+
+      using(c).prepare("create table logs(ts bigint primary key,"
+            + "user varchar(20),"
+            + "msg varchar(200),"
+            + "foreign key (user) references users(name))").andUpdate();
+   }
+   /****************************************************************************
+    *
+    ***************************************************************************/
+   static void v3_trimUserNames(final Connection c) throws Exception {
+
+      final List<String> userNames = using(c).prepare("select name from users").
+            andMap((rs) -> rs.getString(1));
+
+      for (final String name : userNames) {
+         using(c).prepare("update users set name = ? where name = ?").
+               set(name.trim()).set(name).andUpdate();
+      }
+   }
+}
+</code></pre>
+<p>In this example, the first function creates "<code>users</code>" table with
+a single user. The second function adds "<code>logs</code>" table. The third
+function does not change the schema itself but is used to clean the data already
+populating the database. The obvious constraint of this approach is that one may
+NEVER modify the existing functions that have been deployed to production, as
+this will cause loss of consistency.</p>
+</section>
+<section>
+<h2>Pros and Cons</h2>
+<p>The proposed solution exhibits the following advantages:</p>
+<ul>
+<li>DDL code is controlled along with application code (syncing a working copy
+with the repository will always result with newest set schema <i>version patch functions</i>, since they are code).</li>
+<li>The process is reliable (if the database version does not match the expected
+version, the application will not start, upgrading database, on the other hand,
+guarantees proper schema version alignment).</li>
+<li>The process is repeatable (all schema changes are applied in the same manner:
+add <i>version patch function</i>, update expected version constant, build
+the application, run the application against the existing database), and does
+not require any additional build steps.</li>
+<li>The solution is flexible (version patches can upgrade the schema, migrate
+data, clean data, transform data, etc.).</li>
+<li>The DDL code is testable - every <i>version patch function</i> can be put
+under test harness; the following listing shows such test.</li>
+</ul>
+<pre><code>@Test public void upgradeVersion_upgradesDatabase_forProperInvocation()
+         throws Exception {
+
+   upgradeVersion(this.c, 3, DatabaseVersions::build);
+
+   assertEquals(3, getVersionOf(this.c));
+   assertEquals(new Integer(3),
+            using(c).prepare("select count(*) from versions").
+            andMapOne((rs) ->rs.getInt(1)).get());
+   assertEquals("b",
+            using(c).prepare("select pass from users where name = 'a'").
+            andMapOne((rs) ->rs.getString(1)).get());
+   assertFalse(using(c).prepare("select pass from users where name = '\ta'").
+               andMapOne((rs) ->rs.getString(1)).isPresent());
+ }
+</code></pre>
+<p>The proposed solution exhibits the following disadvantages:</p>
+<ul>
+<li>No SQL DDL script that could be fetched into an ERD tool - this is widely
+offset by the ability of tools to dump schema from a live database.</li>
+<li>No SQL syntax checks during development as the SQL code is represented
+by <code>string</code> constant - offset by testability.</li>
+<li>Database schema upgrades or data cleaning action may take long for
+big databases - DDL scripts expose the same issue.</li> 
+<li><i>Version patch functions</i> unit tests may take a long time because
+they need to target an actual database.</li>
+</ul>
+</section>
+<section>
+<h2>Conclusion</h2>
+<p>The proposed solution aims to solve the relational database schema versioning
+problem in a most streamlined and lightweight way without imposing any new build
+artifacts and build steps. It is mostly convention over tools, backed by two utility
+functions placed in a single BSD licensed <a href="https://github.com/lbownik/schemaupgrader/blob/master/src/schemaupgrader/SchemaUpgrader.java">java file</a>
+that can be included in any project and used freely.</p>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
