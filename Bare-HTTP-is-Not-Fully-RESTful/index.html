@@ -12,7 +12,7 @@ body {
     line-height: 1.4;
     max-width: 1000px; 
     margin: 0 auto;    /* centers horizontally */
-    padding: 20px 20px 20px 20px;   /* optional side padding */
+    padding: 20px;   /* optional side padding */
     text-align: justify;
 }
 h1 {
@@ -62,12 +62,12 @@ footer {
 <h1>Bare HTTP is Not Fully RESTful - A Deeper Look at REST Architectural Style 
 and How HTTP Shows Protocol Deficiencies</h1>
 <p class="summary">The article tries to map a deeper, more generic nature of REST 
-architectural style into HTTP to show protocol deficiencies.</p>
+architectural style onto HTTP to show protocol deficiencies.</p>
 </section>
 
 <section>
 <h2>Introduction</h2>
-<p>In my previous <strong><a href="https://lbownik.github.io/articles/Into-the-Core-of-REST/intex.html">article</a></strong> 
+<p>In my previous <strong><a href="https://lbownik.github.io/articles/Into-the-Core-of-REST/index.html">article</a></strong> 
 (please read it first), I tried to describe how I understand the REST architectural
 style irrespectively of any communication protocol.</p>
 </section>
@@ -93,10 +93,10 @@ Stating that, the core of REST can be mapped into HTTP.</p>
 </section>
 <section>
 <h2>Mapping State Patching</h2>
-<p>In order to use state patching technique which is an inevitable optimization
+<p>To use the state patching technique, which is an inevitable optimization
 in real applications where the state is most often huge, there needs to be a
 possibility to uniquely identify state chunks. HTTP uses URIs for that purpose
-calling addressable state chunks "resources". Figure 2 shows an example of
+and calls addressable state chunks "resources". Figure 2 shows an example of
 reading and writing a state chunk.</p>
 <figure>
 <img src="addressable_state.png" alt="addressable state"/>
@@ -106,17 +106,17 @@ reading and writing a state chunk.</p>
 </section>
 <section>
 <h2>Transactional Read</h2>
-<p>In order to read multiple state chunks (resources) transitionally, all of
+<p>In order to read multiple state chunks (resources) transactionally, all of
 them need to be requested by the client in one self-contained message and then
 sent by the server in another self-contained message. This is possible only
 if we can construct a URL encompassing all of the requested resources (for example,
 addressing a group of resources), as HTTP itself does not support multiple URIs
 within a single <code>GET</code> request (see Figure 3). A similar situation
 applies to the response message, as there is no way to send multiple resources
-along with their URIs back to client within a single HTTP response message.
+along with their URIs back to the client within a single HTTP response message.
 It is possible to use a <code>POST</code> request with some artificial URI not
 related to any resource and a payload-carrying a list of requested URIs.
-It is also possible to forge response with representation containing a list of
+It is also possible to construct a response containing representations of
 all requested resources along with their URIs, but such a solution constitutes a
 new "inner protocol" that merely uses HTTP as a transport mechanism breaking
 layer isolation along the way.</p>
@@ -134,18 +134,18 @@ within a single HTTP request message nor multiple status codes within a single
 HTTP response message. It is true that <code>POST</code> supports multipart
 payload but all of those parts are addressed to a single URI, so it is only
 a partial, not satisfying solution (it is possible to correlate each part of
-a multipart message with a UIR by extending HTTP with non-standard headers though).</p>
+a multipart message with a URI by extending HTTP with non-standard headers though).</p>
 </section>
 <section>
 <h2>Patching Variable State</h2>
 <p>In the previous article, I described how RESTful patching of variable state
-can be achieved by the introduction of metadata denoting "timelines" of state
+can be achieved by the introduction of metadata denoting lifecycle phases of state
 chunks. This can be only partially mapped to HTTP. The NEW and MODIFIED
-<b>adjectives</b> can be (semantically incorrectly) mapped into the
-<code>PUT</code> <b>verb</b>, which behaves differently whether a target resource
-exists or not. The <code>MISSING</code> <b>adjective</b> can be mapped into a
-<code>DELETE</code> <b>verb</b>. The server should react to <code>PUT</code> and
-<code>DELETE</code> in an idempotent. The problem is that patching a variable
+<strong>adjectives</strong> can be (semantically incorrectly) mapped into the
+<code>PUT</code> <strong>verb</strong>, which behaves differently whether a target resource
+exists or not. The <code>MISSING</code> <strong>adjective</strong> can be mapped into a
+<code>DELETE</code> <strong>verb</strong>. The server should react to <code>PUT</code> and
+<code>DELETE</code> in an idempotent manner. The problem is that patching a variable
 state of multiple unrelated resources where some of them are <code>NEW</code>,
 some <code>MODIFIED</code>, and some missing is not supported by HTTP as only
 one verb is allowed within a single message (see Figure 4).</p>
@@ -168,7 +168,7 @@ true RESTful communication except cases when "the whole" state gets transferred 
 <section>
 <h2>Appendix: How a True RESTful Protocol Should Look Like</h2>
 <p>A truly RESTful protocol covering all exemplified use cases may use any
-transport it sees suitable but shall define massages as follows:</p>
+transport it sees suitable but shall define messages as follows:</p>
 <ul>
 <li>Message type: enumeration (<code>REQUEST</code>, <code>DATA</code>, <code>ACKNOWLEDGEMENT</code>) – to discern message type (not every message type needs to be used)</li>
 <li>For <code>REQUEST</code> type:
@@ -177,28 +177,28 @@ transport it sees suitable but shall define massages as follows:</p>
             for "entire state" like "<code>/</code>" or <code>NULL</code>; 
             URI is a good candidate but not the only one</li>    
     </ul>
-    </li>  
-        <li>For <code>DATA</code> type:
+</li>  
+<li>For <code>DATA</code> type:
     <ul>
         <li>List of state chunks:
         <ul>
             <li>For every chunk:
             <ul>
                 <li>Chunk identifier;</li>
-                <li>Chunk "timeliness" tag: enumeration (<code>NEW</code>, 
+                <li>Chunk lifecycle phase tag: enumeration (<code>NEW</code>, 
                     <code>MODIFIED</code>, <code>MISSING</code>, <code>CURRENT</code>);</li>
-                    <li>Chunk representation: any data format;</li>
+                <li>Chunk representation: any data format;</li>
             </ul>
             </li>
         </ul>
         </li>   
     </ul>
-    </li>  
-         <li>For <code>ACKNOWLEDGEMENT</code> type:
+</li>  
+<li>For <code>ACKNOWLEDGEMENT</code> type:
     <ul>
         <li>Success/error code.</li>
     </ul>
-    </li>
+</li>
 </ul>
 <p>Figure 5 shows an example of message exchange of a proposed protocol.</p>
 <figure>
