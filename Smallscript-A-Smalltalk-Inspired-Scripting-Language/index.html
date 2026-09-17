@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smallscript - A Smalltalk-Inspired Scripting Language</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+pre {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffe8;
+}
+code {
+    color: #905;
+}
+header {
+    color: #808080;
+}
+
+table {
+    border-collapse: collapse;
+    text-align: left;
+}
+table tr td {
+    border: solid 1px;
+    padding: 10px;
+}
+
+table tbody tr td ul {
+    list-style-type: none;
+    padding-inline-start: 0px;
+}
+
+table thead {
+    background: lightgrey;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject in 2023</p>
+</header>
+<main>
+<article>
+<section>
+<h1>Smallscript - A Smalltalk-Inspired Scripting Language</h1>
+<p><u><a href="smallscript.jar">Click here to download the Smallscript interpreter.</a></u></p>
+</section>
+<section>
+<h2>The Tale of Two Cities</h2>
+<p>Some time ago, I got interested in a rather forgotten language named 
+<a href="https://en.wikipedia.org/wiki/Smalltalk">Smalltalk</a>. While I never
+ really programmed in it, I got seduced by its minimal syntax that fits a postcard.</p>
+<figure>
+<img src="smalltalksyntax.png" alt="smalltalk syntax"/>
+<figcaption>Figure 1. Smalltalk post card.</figcaption>
+</figure>
+<p>Ever since I got bitten by that bug, I keep comparing other languages’ 
+syntaxes and standard libraries to Smalltalk.</p>
+<p>Recently, I got to actually learn <a href="https://www.dabeaz.com/python-distilled/">Python 3</a>. 
+Python is advertised as a simple, readable and generally developer friendly 
+language, yet I kept being astonished (or rather frustrated) with many of its quirks:</p>
+<ul>
+    <li>whitespace used to denote execution structure;</li>
+    <li>object-oriented, but with exceptions (<code>len("abc")</code> instead of 
+        <code>"abc".length()</code> or <code>del(list[0])</code> instead of 
+        <code>list.del(0)</code>);</li>
+    <li>specialized keywords instead of method invocations 
+        ( <code>x in list</code> instead of <code>list.contains(x)</code>);</li>
+    <li>cryptic interface contracts ( <code>__str__()</code> method instead of
+        <code>toString()</code> or <code>str()</code>);</li>
+    <li>verbose functional-programming support (<code>lambda x: x*2</code> 
+        instead of just <code>x -&gt; x*2</code>);</li>
+    <li>odd list comprehensions syntax;</li>
+    <li>and so on.</li>
+</ul>
+<p>Every time I learned about the mentioned features, I asked myself "Why? 
+There is a simpler way to do it. Couldn’t they just copy Smalltalk?". 
+After learning Python, I got to the conclusion that it would be nice to have a
+really simple scripting language inspired by Smalltalk syntax, but without the 
+entire Smalltalk walled-garden ecosystem. While there exists 
+an <a href="https://en.wikipedia.org/wiki/Smalltalk#Image-based_persistence">image-less Smalltalk</a> 
+implementation named <a href="https://en.wikipedia.org/wiki/GNU_Smalltalk">GNU Smalltalk</a>,
+it seems discontinued. This way, an idea of <a href="https://github.com/lbownik/smallscript">Smallscript</a> has been born.
+You may ask, why create another programming language when there are already 
+hundreds of them.&nbsp;Well… because I can.</p> 
+</section>
+<section>
+<h2>Great Expectations</h2>
+<p>Though I started with just a vague idea, my design goals quickly crystallized
+into the following set:</p>
+<ol>
+    <li>Fully object-oriented (like Smalltalk) - everything is an object, even code;</li>
+    <li>Class-less (like JavaScript) - objects are created by calling methods of 
+        factory objects (<a href="https://en.wikipedia.org/wiki/Abstract_factory_pattern">abstract factory pattern</a>);</li>
+    <li>Garbage-collected – obviously;</li>
+    <li>Text-based (like Bash or Python, contrary to Smalltalk);</li>
+    <li>Easy to parse - anything difficult to parse by hand-written 
+        <a href="https://en.wikipedia.org/wiki/LL_parser">top-down LL parser</a> is out of scope;</li>
+    <li>Easy to interpret - top-down, left-to-right (easy to implement using 
+        <a href="https://en.wikipedia.org/wiki/Interpreter_pattern">interpreter pattern</a>).</li>
+    <li>"Braced" – so it looks intuitive to most programmers 
+        (derivatives of C constitute the largest segment of language market share);</li>
+    <li>Null-safe - <code>null</code> is a real object (like in Smalltalk), 
+        not an empty object reference value
+        (<a href="https://en.wikipedia.org/wiki/Null_object_pattern">null object pattern</a>);</li>
+    <li>Without global variables – they aren’t actually needed for anything;</li>
+    <li>Supporting functional programming (like Smalltalk or C#);</li>
+    <li>Providing minimalistic syntax - no special keywords, no flow-control statements, 
+        a handful of built-in types: <code>long</code>, <code>double</code>, 
+        <code>string</code>, <code>block</code>, <code>Object</code>, 
+        <code>List</code>, <code>Set</code>, <code>Map</code>, 
+        <code>Stream</code>, <code>null</code> (like Smalltalk, but even more);</li>
+    <li>Enabling writing code in style resembling pidgin-English 
+        (like Smalltalk) – no mathematical notation, easy method chaining, 
+        arguments within method names, code and objects being equivalent 
+        (everything is executable);</li>
+</ol>
+<p>There is also one non-goal which is performance (for now).</p>
+</section>
+<section>
+<h2>Little Smallscript</h2>
+<p><a href="https://github.com/lbownik/smallscript">Smallscript</a> allows only 
+9 operations depicted in Figure 2 (use cases 1 and 2 are abstract).</p>
+<figure>
+<img src="use_cases.png" alt="use cases"/>
+<figcaption>Figure 2. Language constructs use cases.</figcaption>
+</figure>
+<h3>Basic Structure</h3>
+<p>A <a href="https://github.com/lbownik/smallscript">Smallscript</a> program is 
+interpreted as a block of code (anonymous function) with a predefined set of 
+arguments (pre-existing local variables):</p>
+<ul>
+    <li><code>application</code> - references an object denoting this application;
+        exposes methods to obtain standards I/O streams, command line arguments, etc;</li>
+    <li><code>null</code> - references an empty object denoting no value, empty
+        collection, empty stream, etc;</li>
+    <li><code>true</code> - references an object representing truth value;</li>
+    <li><code>false</code> - references an object representing falsity value;</li>
+    <li><code>Object</code> - references a factory of generic objects 
+        (obtained via "<code>new</code>" method);</li>
+    <li><code>List</code> - references a factory of ordered lists;</li>
+    <li><code>Set</code> - references a factory of sets;</li>
+    <li><code>Map</code> - references a factory of maps;</li>
+    <li><code>Exception</code> - references a factory of exception objects;</li>
+</ul>
+<p>A program is a set of sentences where words denoting variables, constants or 
+(partial) methods names, are separated with whitespace. Each sentence is 
+terminated with semicolon. For example:</p>
+<pre>
+<code>
+true and: false;
+</code>
+</pre>
+<p>first references variable <code>true</code>, and then invokes 
+<code>true</code>'s method "<code>and:</code>" passing an argument;referenced by
+<code>false</code> to it.</p>
+<p>Sentences are executed from top to bottom and from right to left. In the following example:</p>
+<pre>
+<code>
+1 equals: 1;
+true and: false equals: false;
+</code>
+</pre>
+<p>the upper sentence gets executed first and the lower sentence second. 
+In the second;sentence:</p>
+<pre>
+<code>
+true and: false
+</code>
+</pre>
+<p>will be executed first and the result will be input to other two tokens.</p>
+<pre>
+<code>
+&lt;result&gt; equals: false;
+</code>
+</pre>
+<p>To change the order of execution, parentheses shall be used. For example:</p>
+<pre>
+<code>
+true and: (false equals: false);
+</code>
+</pre>
+<h3>Constants and Variables</h3>
+<p>There are four types of constants in <a href="https://github.com/lbownik/smallscript">Smallscript</a>:</p>
+<ul>
+    <li>integers - e.g., <code>1, 2, 3</code>;</li>
+    <li>floating point numbers - e.g., <code>1.1, 2.4</code>;</li>
+    <li>strings - e.g., "<code>abc</code>";</li>
+    <li>blocks (anonymous functions) - e.g., <code>{}</code>;</li>
+</ul>
+<p>Variables are always allocated on stack within current block's frame. 
+Declaring a new variable requires prepending its name with '<code>!</code>' character, 
+otherwise <a href="https://github.com/lbownik/smallscript">Smallscript</a> 
+assumes an existing variable. Variables cannot exist without values being 
+assigned to them. To assign value to a variable, the '<code>=</code>' 
+character is used. For example, execution of the following program:</p>
+<pre>
+<code>
+!var1 = "abc";
+!var2 = "def";
+var2 = var1;
+var1 = "xyz";
+</code>
+</pre>
+<p>will create two variables with <code>var1</code> referencing the value 
+of <code>"xyz"</code> and <code>var2</code> referencing the value
+of <code>"abc"</code>. Variables can also hold references to blocks:</p>
+<pre>
+<code>
+!function = {};
+</code>
+</pre>
+<p>All types in <a href="https://github.com/lbownik/smallscript">Smallscript</a> 
+are <a href="https://en.wikipedia.org/wiki/Value_type_and_reference_type">reference types</a>. 
+Variable names are case sensitive.</p>
+<h3>Blocks</h3>
+<p>Blocks are anonymous functions performing computations. Blocks always return 
+a value. The value is the result of execution of the last sentence in a block 
+(there is no "<code>return</code>" keyword). For example, execution of the block:</p>
+<pre>
+<code>
+{
+    !v1 = "abc";
+    !v2 = "def";
+    v1 equals: v2;
+};
+</code>
+</pre>
+<p>returns <code>false</code>; Executing empty block:</p>
+<pre>
+<code>
+{
+};
+</code>
+</pre>
+<p>returns <code>null</code>.</p>
+<p>Blocks can accept any number of input arguments terminated with '<code>|</code>':</p>
+<pre>
+<code>
+{ !v1 !v2 |
+    v1 equals: v2;
+};
+</code>
+</pre>
+<p>Blocks are objects. In order to execute block without arguments, an 
+"<code>execute</code>" method needs to be called. For example, the following program:</p>
+<pre>
+<code>
+!empty = {};
+empty execute;
+</code>
+</pre>
+<p>returns <code>null</code>. Executing block with arguments requires calling 
+"<code>executeWith:</code>" method. For example, executing the program:</p>
+<pre>
+<code>
+!function = { !v1 !v2 | 
+    v1 equals: v2;
+};
+function executeWith: "abc" :and: "def";
+</code>
+</pre>
+<p>returns <code>false</code>. "<code>executeWith:</code>" method can take any
+number for arguments separated by "<code>:and:</code>" clauses. Blocks ignore 
+the extra arguments. For example, the program:</p>
+<pre>
+<code>
+!function = { !v1 !v2 | 
+    v1 equals: v2;
+};
+function executeWith: "abc" :and: "def" :and: "xyz";
+</code>
+</pre>
+<p>still works properly since the value "<code>xyz</code>" gets ignored.</p>
+<p>Every <a href="https://github.com/lbownik/smallscript">Smallscript</a> object 
+can be executed. Unless an object explicitly overrides "<code>execute</code>" method, 
+executing it simply returns this object. For example:</p>
+<pre>
+<code>
+"abc" executeWith: "xyz";
+</code>
+</pre>
+<p>does nothing and returns <code>"abc"</code>.</p>
+<h3>Closures</h3>
+<p>Each block is a <a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">closure</a>, 
+if it references variables not defined within its scope. For example, the following program:</p>
+<pre>
+<code>
+{
+    !var = "abc";
+    {
+        var;
+    };
+} execute execute;
+</code>
+</pre>
+<p>returns <code>"abc"</code>, since the execution of outer block returns the 
+inner block enclosing <code>var</code> variable and the execution of inner block 
+returns the value referenced by <code>var</code>.</p>
+<h3>Objects and Methods</h3>
+<p>Objects are the only data structures available in Smallscript. New objects
+are created by calling methods of other objects. The following snippet shows
+examples of object creation:</p>
+<pre>
+<code>
+!myGenericObject = Object new;
+!myList = List new;
+!mySet = Set new;
+!myMap = Map new;
+</code>
+</pre>
+<p>By convention, names of variables referencing factory objects start with upper case.
+Objects are class-less. The only way to add methods to objects is to call
+"<code>addMethod::using:</code>" method on them and pass new method name and a
+block as parameters. For example, the following program:</p>
+<pre>
+<code>
+!obj = Object new;
+obj addMethod: "sayHelloTo:" :using: { !this !name |
+    "Hello " append: name append: "!";
+};
+obj sayHelloTo: "Mike";
+</code>
+</pre>
+<p>returns <code>"Hello Mike!"</code>. Blocks are unaware of object affiliation, 
+that's why it is necessary to explicitly declare <code>!this</code> as the first
+argument of a block assigned as method to an object (just like in Python).
+The name <code>!this</code> is only a convention, it can be anything.</p>
+<p>In order to add a field to an object, the "<code>addField:</code>" method 
+needs to be called. For example, the following program:</p>
+<pre>
+<code>
+!obj = Object new;
+obj addField: "name";
+obj name: "Mike";
+obj name;
+</code>
+</pre>
+<p>adds new field named "<code>name</code>" to a generic object with initial
+value of <code>null</code>. Then it writes and reads the value of this field
+returning "<code>Mike</code>". <a href="https://github.com/lbownik/smallscript">Smallscript</a> 
+does not allow direct access to object fields. Every time a field is added to an
+object, <a href="https://github.com/lbownik/smallscript">Smallscript</a> generates 
+methods to read and write the field value. Like in Smalltalk and Python, all
+fields and methods of an objects are <code>public</code>. By convention,
+the names of "<code>private</code>" fields and methods shall start with
+'<code>$</code>' character and "<code>protected</code>" with '<code>^</code>'
+(for example, <code>$myPrivateField</code> or <code>^myProtectedMethod</code>).</p>
+<p>Creation of specific objects shall be enclosed in methods of factory objects
+as shown in appendix A.</p>
+<h3>More on Methods</h3>
+<p>Method names in <a href="https://github.com/lbownik/smallscript">Smallscript</a>
+can consist of any characters, but a colon character has a special meaning.
+Similarly to Smalltalk, <a href="https://github.com/lbownik/smallscript">Smallscript</a>
+allows putting argument values "within" methods names to improve readability.
+Colons in method names denote places where such insertion is possible. The rules are as follows:</p>
+<ol>
+    <li>method name MUST NOT start with colon;</li>
+    <li>method name without arguments MUST NOT contain colon;</li>
+    <li>method name with one or more arguments MAY end with colon;</li>
+    <li>method name with two or more arguments MUST contain two consecutive colons;</li>
+    <li>method name MUST NOT contain three or more consecutive colons;</li>
+    <li><code>!this</code> argument is passed implicitly and DOES NOT require colons.</li>
+</ol>
+<p>The following examples present <strong>valid</strong> method names along with possible invocations:</p>
+<table>
+<thead>
+    <tr><td>Method name</td><td>Example Invocation</td></tr>
+</thead>
+<tbody>
+    <tr><td><code>size</code></td><td><code>car size;</code></td></tr>
+    <tr><td><code>name:</code></td><td><code>car name: "Toyota";</code></td></tr>
+    <tr><td><code>maxSpeed::kph</code></td><td><code>car maxSpeed: 200 :kph;</code></td></tr>
+    <tr><td><code>addMethod::using:</code></td><td><code>car addMethod: "color" :using: { "red";};</code></td></tr>
+</tbody>
+</table>
+<p>Please notice that method arguments are always placed between inner colons 
+(separated with whitespace) and after ending colon (separated with whitespace).
+The following list presents <strong>invalid</strong> names:</p>
+<ul>
+    <li><code>:</code></li>
+    <li><code>:name</code></li>
+    <li><code>abc:::def</code></li>
+</ul>
+<p>It is important to keep colons right when invoking methods in order not to
+confuse parser where the methods' names begin and end.</p>
+<h3>Arithmetics</h3>
+<p>Smallscript does NOT provide arithmetic operators. Instead objects of "type"
+<code>long</code> and <code>double</code> provide methods named <code>plus:</code>,
+<code>minus:</code>, <code>dividedBy:</code> etc. The rationale is that arithmetic
+operations are rarely used when scripting and special treatment of arithmetic
+operators (+,-,/,*...) would complicate the parser and break the strict
+left-to-right evaluation principle.</p>
+<h3>Flow Control</h3>
+<p>Just like Smalltalk, <a href="https://github.com/lbownik/smallscript">Smallscript</a>
+does not define any flow control keywords (actually,
+<a href="https://github.com/lbownik/smallscript">Smallscript</a> does not define
+any keywords at all). Since every value is an object, flow control is achieved
+by invoking methods of objects with blocks as arguments. The following snippets
+provide example of common flow control constructs in Smallscript.</p>
+<h4>Conditional flow control (if statement):</h4>
+<pre>
+<code>
+2 isLessThan: 3 ifTrue: { application output writeLine: "true"}
+              :ifFalse: { application output writeLine: "false"};
+</code>
+</pre>
+<p>The method "<code>isLessThan:"</code> returns either <code>true</code> or
+<code>false</code> object depending on comparison outcome. Both <code>true</code>
+and <code>false</code> objects provide "<code>ifTrue::ifFalse:"</code> method.
+In case of <code>true</code> object, the method invokes the "<code>execute"</code>
+method of the <strong>first</strong> argument (block in this case) returning its
+return value. In case of <code>false</code> object, the methods invokes the "<code>execute</code>
+method of the <strong>second</strong> argument (block in this case) returning its return value.</p>
+<h4>Ternary operator (?):</h4>
+<pre>
+<code>
+application output writeLine: (2 isLessThan: 3 ifTrue: "true" :ifFalse: "false");
+</code>
+</pre>
+<p>Since all objects are executable, ternary operator's functionality is
+achieved by the same means as above.</p>
+<h4>Conditional iteration (while loop):</h4>
+<pre>
+<code>
+!counter = 0;
+{counter isLessThan: 10} whileTrue: {
+    application output writeLine: counter;
+    counter = counter plus: 1;
+};
+</code>
+</pre>
+<p>The <code>"whileTrue:</code>" methods executes its own block
+(<code>{counter isLessThan: 10}</code>) in a loop until it returns <code>false</code>.
+Every time it returns <code>true</code>, the method executes its argument.
+The return value of "<code>whileTrue:</code>" method is the last value returned
+by argument's <code>execute</code> method or <code>null</code>, if the argument
+has never been executed.</p>
+<h4>N-ary iteration (for loop):</h4>
+<pre>
+<code>
+1 to: 3 forEach: { !number | application output writeLine: number };
+3 times: { application output writeLine: "Hello" };
+</code>
+</pre>
+<h4>Exceptions (throw, try, catch):</h4>
+<pre>
+<code>
+!o = Object new;
+o try: {
+  o throw;
+} :catch: {!e |
+  e equals: o;
+};
+</code>
+</pre>
+<p>Every object can be thrown as an exception using its "<code>throw</code>" method.
+The "<code>throw</code>" method never returns. Every object provides a "<code>try::catch:</code>" method.
+The method executes the first argument. If the execution of the first argument
+ends up with exception, the method executes its second argument giving it the
+exception object. Every object provides a "<code>nature</code>" method.
+The return value of this method can be used to differentiate exception "types".</p>
+<h3>null</h3>
+<p>Smallscript is a null-safe language. "<code>null</code>" is not a special
+illegal reference value but a variable holding reference to a special object
+that acts like empty value (empty optional, empty list, empty set, empty map, etc.).
+Besides a few defined methods (<code>asString</code>, <code>equals:</code>,
+<code>hash</code>, <code>isNotEqualTo:</code>, <code>orDefault:</code>,
+<code>nature</code> and <code>size</code>), calling any method on this object
+is a no-op returning <code>null</code>. The following program shows valid
+usage of <code>null</code>:</p>
+<pre>
+<code>
+!result = null selectIf: {!item | item startsWith: "x"} 
+          transformUsing: {!item | item size }
+          collectTo: List;
+                           
+result equals: null;
+</code>
+</pre>
+<p>and returns <code>true</code>.</p>
+<h3>Memory Model</h3>
+<p><a href="https://github.com/lbownik/smallscript">Smallscript</a> provides
+three memory areas available to programmer (see Figure 3):</p>
+<ul>
+    <li>Constants area - contains the whole object-executable code of a program;
+        along with values of all constants defined in it; it is not garbage-collected;</li>
+    <li>Heap - contains values of all objects created during program execution
+        (e.g., by invoking <code>Object new; List new;</code> etc.); it is garbage-collected;</li>
+    <li>Stack - holds references to all variables created during program execution;
+        each block invocation creates a new frame (block of memory) containing
+        local variables created by this block; block's frame gets disposed after
+        the block finishes execution.</li>
+</ul>
+<figure>
+<img src="memory_layout.png" alt="memory layout"/>
+<figcaption>Figure 3. Smallscript's memory model.</figcaption>
+</figure>
+<p>Smallscript does not provide global variables. All variable references are
+placed on Stack. In order to read or write a variable,
+<a href="https://github.com/lbownik/smallscript">Smallscript</a> interpreter
+searches for particular reference in the current Stack frame.
+If the variable name is found in current frame, it is read or written,
+otherwise the interpreter moves one frame down the stack and looks for variable again.
+The process continues until the variable is found or bottom of the stack has been reached,
+in which case the interpreter exits with error. This behavior allows using
+predefined set of variables existing at the bottom of stack as if they were
+global (e.g., <code>Object</code>), as well as overshadowing already existing
+variables with block-local ones (e.g., <code>name</code>).
+Additionally, it allows easy implementation of closures.</p>
+</section>
+<section>
+<h2>Battle of Life</h2>
+<p>The initial version of <a href="https://github.com/lbownik/smallscript">Smallscript</a>
+interpreter (<a href="smallscript.jar">click here to download</a>) has been 
+written in Java 17 (C++ implementation is in progress).
+The reason of this was that I was able to reuse a
+<a href="https://github.com/lbownik/primitive-json">little JSON parser</a> code
+I wrote years ago, and leverage Java’s garbage collector.
+The command to start interactive mode is:</p>
+<pre>
+<code>
+java -jar smallscript.jar
+</code>
+</pre>
+<p>In order to execute a script, just pass its name as an argument using:</p>
+<pre>
+<code>
+java -jar smallscript.jar myscript.ss
+</code>
+</pre>
+<p><a href="https://github.com/lbownik/smallscript">Smallscript</a> does no
+t have any documentation yet, so please refer to the
+<a href="https://github.com/lbownik/smallscript">source code</a> for details.</p>
+</section>
+<section>
+<h2>Appendix A - Hard Times</h2>
+<p>The following snippet shows the built-in implementation of a very simple
+unit testing framework provided by <a href="https://github.com/lbownik/smallscript">Smallscript</a>:</p>
+<pre>
+<code>
+#-------------------------------------------------------------------------------
+#Copyright 2023 Lukasz Bownik
+#
+#Licensed under the Apache License, Version 2.0 (the "License");
+#you may not use this file except in compliance with the License.
+#You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#Unless required by applicable law or agreed to in writing, software
+#distributed under the License is distributed on an "AS IS" BASIS,
+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#See the License for the specific language governing permissions and
+#limitations under the License.
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# TestCase
+#-------------------------------------------------------------------------------
+!TestCase = Object new addMethod: "asString" :using: "TestCase";
+
+#-------------------------------------------------------------------------------
+TestCase addMethod: "named::using:" :using: {!this !name !block |
+
+    !case = Object new 
+            addField: "result" 
+            addField: "name"   :withValue: name
+            addField: "block"  :withValue: block;
+    #----------------------------------------------------------------------------
+    case addMethod: "run" :using: {!this |
+         
+         this try: {
+                this block execute;
+                this result: "Passed";
+         } :catch: { !e |
+                this result: ("Failed: " append: (e message));
+         };
+    };
+};
+#-------------------------------------------------------------------------------
+# TestSuite
+#-------------------------------------------------------------------------------
+!TestSuite = Object new addMethod: "asString" :using: "TestSuite";
+
+#-------------------------------------------------------------------------------
+TestSuite addMethod: "new" :using: {
+
+    !suite = Object new
+             addImmutableField: "tests" :withValue: (List new);
+   #----------------------------------------------------------------------------
+    suite addMethod: "addTestNamed::using:" :using: {!this !name !block |
+           
+            this tests add: (TestCase named: name :using: block);
+          this;
+    };   
+    #---------------------------------------------------------------------------
+    suite addMethod: "$createAssert" :using: {!this |
+    
+          Object new addMethod: "that::equals:" :using: {!this !expected !actual |
+                 
+                 expected equals: actual ifFalse: { 
+                    Object new addField: "nature"  :withValue: "assertionFailure"
+                               addField: "cause"   :withValue: this
+                               addField: "message" :withValue: 
+                                  ("Expected: " append: (expected asString) 
+                                                append: " but was: "
+                                                append: (actual asString))
+                               throw;
+                 };
+          };
+    };   
+    #---------------------------------------------------------------------------
+    suite addMethod: "$createFail" :using: {!this |
+    
+          Object new addMethod: "with:" :using: {!this !message |
+                 
+                 Object new addField: "nature"  :withValue: "assertionFailure"
+                            addField: "cause"   :withValue: this
+                            addField: "message" :withValue: message
+                            throw;
+          };
+    };
+    #---------------------------------------------------------------------------
+    suite addMethod: "run" :using: {!this |
+    
+        !assert = this $createAssert;
+        !fail   = this $createFail;
+    
+        this tests forEach: {!test | test run };
+        this;
+    };
+    #---------------------------------------------------------------------------
+    suite addMethod: "printResultsTo:" :using: {!this !output |
+    
+        output append: "====== Results =======\n";
+        this tests forEach: { !test | output append: (test name) append: " - "
+             append: (test result) append: "\n"; } ;
+        this;
+    };
+};
+#-------------------------------------------------------------------------------
+# ModuleObject - value returned by this script
+#-------------------------------------------------------------------------------
+Object new addField: "Suite" :withValue: TestSuite;
+</code>
+</pre>
+<p>The above script can be loaded and used in the following way:</p>
+<pre>
+<code>
+!SUnit = application load: "SUnit.ss";
+!suite = SUnit Suite new;
+            
+suite addTestNamed: "test1" :using: { 
+            
+    assert that: 10 :equals: 10;
+};
+            
+suite addTestNamed: "test2" :using: { 
+               
+    fail with: "abc";
+};
+            
+suite run printResultsTo: (application output);
+</code>
+</pre>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" aria-hidden="true" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
