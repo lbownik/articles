@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit Test Suite Quality Estimation</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+pre {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffe8;
+}
+code {
+    color: #905;
+}
+header {
+    color: #808080;
+}
+
+table {
+    border-collapse: collapse;
+    text-align: left;
+}
+table tr td {
+    border: solid 1px;
+    padding: 10px;
+}
+
+table tbody tr td ul {
+    list-style-type: none;
+    padding-inline-start: 0px;
+}
+
+table thead {
+    background: lightgrey;
+}
+table thead tr th {
+    border: solid 1px;
+    padding: 10px;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject in 2019</p>
+</header>
+<main>
+<article>
+<section>
+<h1>Unit Test Suite Quality Estimation</h1>
+</section>
+<section>
+<h2>Introduction</h2>
+<p>This text presents a simple method to estimate the quality of a unit test
+suite that can give some insight into the subject beyond regular test coverage.
+All examples are given in Java.</p>
+</section>
+<section>
+<h2>Code Coverage Problem</h2>
+<p>Imagine a team of developers working on a software product. They write code
+and <a href="https://en.wikipedia.org/wiki/Unit_testing">unit tests</a>.
+They can present over 50% <a href="https://en.wikipedia.org/wiki/Code_coverage">code coverage</a>,
+but they are suspiciously conservative about any change always trying to mitigate the risk.
+That seems strange, since coverage over 50% is actually pretty good for application
+(not so much for a reusable library), and should provide considerable confidence
+during code changes. Not in this case though, because the problem lies not in
+quantity but in quality of tests.</p>
+<p>The main problem with code coverage expressed in terms of percentage of executed
+statements is, that it does not equal to the coverage measured in term of
+exercised use cases. All it measures is the number of executed lines of code
+without taking into consideration whether anything gets actually verified.
+This limits the utility of this metric alone.</p>
+</section>
+<section>
+<h2>Definition of Quality</h2>
+<p>A high-quality test suite should give high confidence about how the code
+under test behaves. It should preferably encode all required behavior
+(expressed as use cases) of all delivered functionality so that every unwanted
+behavior gets automatically detected. This is the point of perfection.
+The rest of this text presents the extended metric that helps in monitoring
+the quality of the test suite.</p>
+</section>
+<section>
+<h2>Example</h2>
+<p>To illustrate the presented method, the following code under test is used
+throughout this text. The class generates odd numbers. The boolean property
+instructs the generator to emit only prime numbers.</p>
+<pre>
+<code>
+public final class NumberGenerator {
+
+    private boolean primeNumbersOnly;
+
+    public NumberGenerator() {
+
+        this.primeNumbersOnly = false;
+    }
+    public boolean isPrimeNumbersOnly() {
+
+        return primeNumbersOnly;
+    }
+    public void setPrimeNumbersOnly(boolean primeNumbersOnly) {
+
+        this.primeNumbersOnly = primeNumbersOnly;
+    }
+
+    public List<Integer> generateOdd() {
+
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 1; i < 10; i += 2) {
+            if (this.primeNumbersOnly) {
+                if (isPrime(i)) {
+                    result.add(i);
+                }
+            } else {
+                result.add(i);
+            }
+        }
+
+        return result;
+    }
+
+    private static boolean isPrime(int x) {
+
+        for (int i = 2; i < x; i++) {
+            if (x % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+</code>
+</pre>
+<p>Additionally, to code under test, the following unit test suite is used 
+throughout this text.</p>
+<pre>
+<code>
+public class NumberGeneratorTest {
+    
+    @Test
+    public void testConstruction1() {
+        
+        NumberGenerator ng = new NumberGenerator();
+        assertNotNull(ng);
+    }
+    @Test
+    public void testConstruction2() {
+        
+        try {
+            NumberGenerator ng = new NumberGenerator();
+        } catch(Exception e) {
+            fail();   
+        }
+    }
+    
+    @Test
+    public void testPrimeNumbersOnly() {
+        
+        NumberGenerator ng = new NumberGenerator();
+        ng.setPrimeNumbersOnly(true);
+        assertTrue(ng.isPrimeNumbersOnly());
+    }
+    
+    @Test
+    public void testGenerateOdd1() {
+        
+        NumberGenerator ng = new NumberGenerator();
+        ng.setPrimeNumbersOnly(false);
+        
+        List<Integer> result = ng.generateOdd();
+        assertEquals(Arrays.asList(1,3,5,7,9), result);
+    }
+    
+    @Test
+    public void testGenerateOdd2() {
+        
+        NumberGenerator ng = new NumberGenerator();
+        ng.setPrimeNumbersOnly(false);
+        
+        List<Integer> result = ng.generateOdd();
+        assertEquals(Arrays.asList(1,3,5,7,9), result);
+        
+        ng.setPrimeNumbersOnly(true);
+        
+        result = ng.generateOdd();
+        assertEquals(Arrays.asList(1,3,5,7), result);
+    }
+}
+</code>
+</pre>
+</section>
+<section>
+<h2>Quality Estimation</h2>
+<p>In order to determine the quality of the test suite, one needs to review
+both test cases and code under test. Preferably, the whole test suite should
+be reviewed, but in order to estimate an existing large test suite, one should
+gather enough samples to reason about the whole codebase (at least 100).
+During a rough inspection, every test case gets assigned three numeric values:
+verification ratio, use case coverage and covered complexity.</p>
+<h3>Verification Ratio</h3>
+<p>A verification ratio denotes whether the test actually verifies anything.
+Value of 1 gets assigned to a test which verifies behavior of exercised code
+(<code>testPrimeNumbersOnly</code>, <code>testGenerateOdd1</code>, <code>testGenerateOdd1</code>),
+the value of <code>0</code> gets assigned to a test that merely runs the code
+(<code>testConstruction1</code> and <code>testConstruction1</code>).
+There may be cases where things are not obvious at first glance.
+In such situations, an arbitrary fraction number may be assigned
+(remember, this is just estimation).</p>
+<h3>Use Case Coverage</h3>
+<p>Use case coverage expresses the number of all use cases the test should cover
+to the actual number of exercised use cases. This parameter is tricky as it
+requires looking through the entire suite (usually entire source file) to find
+all exercised use cases for examined functionality. For example, if a function
+under test accepts a single boolean parameter, the number of use cases is 2
+(one for “<code>true</code>” value, and one for “<code>false</code>").
+If the test exercises both (<code>testGenerateOdd2</code>), the value of
+<code>1</code> shall be assigned to this parameter. If the test exercises only
+one (<code>testGenerateOdd1</code>), the value of <code>0.5</code> shall be assigned,
+unless there is another test case that excesses the other value, then both cases
+shall be assigned <code>1</code>. The value of <code>0</code> shall be assigned
+only when the value of verification ratio is <code>0</code>, since tests that
+do not verify anything do not cover any use cases either
+(<code>testConstruction1</code> and <code>testConstruction2</code>).
+Since this is an estimation, a value of <code>0.5</code> can be assigned if only
+a sunny day scenario is exercised (then the average error is then only <code>0.25</code>).</p>
+<h3>Complexity Impact</h3>
+<p>Complexity impact is a rough estimation telling whether code under test contains
+functionality worth testing. Value of <code>1</code> can be assigned to test case
+for regular code that contains some algorithm – a condition, loop or sequence of
+function invocations (<code>testGenerateOdd2</code>). Value of <code>0.1</code>
+shall be assigned to test cases exercising getters and setters and other functions
+that merely copy variables (<code>testConstruction1</code>, <code>testConstruction2</code>,
+<code>testPrimeNumbersOnly</code>). In rare cases, the value of <code>0</code> may
+get assigned if it is difficult to determine whether the test actually runs the
+code under test (sic!) or the test is redundant
+(<code>testGenerateOdd1</code> because it is a subset of <code>testGenerateOdd2</code>).
+This parameter is very rough by nature, as there is plenty of freedom between
+<code>0.1</code> and <code>1</code>.</p>
+<h3>Results</h3>
+<p>The result of the code review shall be a table containing 5 columns with assigned values.</p>
+<h4>Table 1. Review Results</h4>
+<table>
+<thead>
+    <tr><th>Test name</th><th>Verification ratio</th><th>Use case coverage</th><th>Complexity impact</th><th>Comment</th></tr>
+</thead>
+<tbody>
+     <tr><td><code>testConstruction1</code></td><td><code>0</code></td><td><code>0</code></td><td><code>0.1</code></td><td>Does not verify anything</td></tr>
+     <tr><td><code>testConstruction2</code></td><td><code>0</code></td><td><code>0</code></td><td><code>0.1</code></td><td>Does not verify anything</td></tr>
+     <tr><td><code>testPrimeNumbersOnly</code></td><td><code>1</code></td><td><code>0.5</code></td><td><code>0.1</code></td><td></td></tr>
+     <tr><td><code>testGenerateOdd1</code></td><td><code>1</code></td><td><code>0.5</code></td><td><code>0</code></td><td>Redundant</td></tr>
+     <tr><td><code>testGenerateOdd2</code></td><td><code>1</code></td><td><code>1</code></td><td><code>1</code></td><td></td></tr>
+</tbody>
+</table>
+<h3>Average Covered Complexity (ACC)</h3>
+<p>Average covered complexity gets calculated as the average of products of all three parameters of all examined test cases.</p>
+<p><strong>ACC = AVERAGE(verification ratio(i)* use case coverage (i)* complexity impact(i)) </strong><br>
+where <code>i = 1</code> to number of reviewed tests.</p>
+<p>The following table presents the value for example suite in the bottom right cell (value <code>0.21</code>).</p>
+<h4>Table 2. Test Suite Quality Metrics</h4>
+<table>
+<thead>
+    <tr><th>Test name</th><th>Verification ratio</th><th>Use case coverage</th><th>Complexity impact</th><th>Comment</th><th>Covered complexity</th></tr>
+</thead>
+<tbody>
+     <tr><td><code>testConstruction1</code></td><td><code>0</code></td><td><code>0</code></td><td><code>0.1</code></td><td>Does not verify anything</td><td><strong>0</strong></td></tr>
+     <tr><td><code>testConstruction2</code></td><td><code>0</code></td><td><code>0</code></td><td><code>0.1</code></td><td>Does not verify anything</td><td><strong>0</strong></td></tr>
+     <tr><td><code>testPrimeNumbersOnly</code></td><td><code>1</code></td><td><code>0.5</code></td><td><code>0.1</code></td><td></td><td><strong>0.05</strong></td></tr>
+     <tr><td><code>testGenerateOdd1</code></td><td><code>1</code></td><td><code>0.5</code></td><td><code>0</code></td><td>Redundant</td><td><strong>0</strong></td></tr>
+     <tr><td><code>testGenerateOdd2</code></td><td><code>1</code></td><td><code>1</code></td><td><code>1</code></td><td></td><td><strong>1</strong></td></tr>
+     <tr><td><strong>AVERAGE</strong></td><td><strong>0.6</strong></td><td><strong>0.4</strong></td><td><strong>0.26</strong></td><td></td><td><strong>0.21</strong></td></tr>
+</tbody>
+</table>
+<p>Values close to <code>1</code> mean that the test suite concentrates on
+complex non-trivial functionality. Such a test suite provides confidence
+for the software team. On the other hand, values close to <code>0</code> indicate
+that the suite does not verify much concentrates on trivial functionality or does
+not fully exercise all possible use cases (or all of them combined).</p>
+<p>Code coverage and average covered complexity combined provide insight into
+the quality of test suite that has been summarized in Figure 1.</p>
+<figure>
+<img src="unit_test_quality_estimation_method.png" alt="unit test quality estimation method"/>
+<figcaption>Figure 1. Test suite quality.</figcaption>
+</figure>
+<p>The interpretation of the diagram is as follows:</p>
+<ul>
+    <li>Both parameters over 0.5 or 50% (green quadrant) denote a suite that
+        covers most of the relevant complex use cases of code under test;
+        this is a desirable situation.</li>
+    <li>Code coverage under 50% and average covered complexity over 0.5
+        (yellow quadrant) denotes a suite of good quality but insufficient
+        quantity (a lot of functionality hasn’t been covered at all, but the
+        covered functionality is thoroughly exercised); this situation happens
+        when tests have been abandoned during development process or are being
+        written after fact, usually as a prerequisite for refactoring;
+        in order to move the suite to green quadrant, more tests need to be written
+        to cover the remaining parts of functionality.</li>
+    <li>Code coverage over 50% and average covered complexity under 0.5
+        (red quadrant) denote a “fraud” test suite that was created only to
+        fool code coverage metric; such suite shall be deleted.</li>
+    <li>Both parameters under 0.5 or 50% (grey quadrant) denote that the
+        existence of the test suite itself is questionable; such a suite shall
+        be refactored or deleted.</li>
+</ul>
+<p>A point of perfection is a guiding light for test suite but reaching it is
+rarely possible or desirable (it is usually too expensive). The test suite that
+provides the highest return of investment is usually placed somewhere within a
+light green quadrant usually leaning towards higher average covered complexity
+than code coverage. In this case, all non-trivial functionality gets exercised
+by the test suite.</p>
+</section>
+<section>
+<h2>Additional Metrics</h2>
+<p>In order to give even more insight into the problem, additional metrics
+can be calculated:</p>
+<ul>
+    <li><b>Average verification ratio</b> – shows what percentage of test cases
+        actually verify something; low values (0.61 in the example) mean that
+        many test cases just run code under test</li>
+    <li><b>Average use case coverage</b> – shows the ratio of use cases exercised
+        by tests; low values (0.4 in the example) mean that tests are not exhaustive</li>
+    <li><b>Average complexity impact</b>– shows the average verified complexity
+        of covered code; low values (0.26 in the example) mean that test suite
+        concentrates on trivial functionality that is unlikely to misbehave</li>
+</ul>
+</section>
+<section>
+<h2>Refactoring for Quality</h2>
+<p>The described method can be used to guide the refactoring of a test suite to
+improve quality. The refactoring starts with the removal of all tests with 0
+verification ratio as they do not serve any purpose. Then all tests with
+complexity impact of <code>0.1</code> shall be removed as well as they have
+little utility. Performing these two steps causes code coverage to drop down
+showing functionality uncovered by test suite. After that, all tests with use
+case coverage less than 1 shall be improved, and new quality tests shall be written.</p>
+</section>
+<section>
+<h2>Automation</h2>
+<p>The presented method can be automated to some extent. If the programming
+language supports annotations, a special one can be developed to keep parameters
+assigned to every test case along with the test case as presented in the
+following code snippet.</p>
+<pre>
+<code>
+@Test
+@Quality(verificationRatio = 1, useCaseCoverage = 0.5, complexityImpact = 0.1, 
+      comment="Tests trivial assignment.")
+public void testPrimeNumbersOnly() {
+        
+    NumberGenerator ng = new NumberGenerator();
+    ng.setPrimeNumbersOnly(true);
+    assertTrue(ng.isPrimeNumbersOnly());
+}
+</code>
+</pre>
+<p>The test case evaluation can be part of regular code reviews and code coverage
+tools can be extended to calculate aggregated metric during test suite execution.</p>
+<p><strong>NOTE: A jar file containing @Quality annotation and an Apache Ant task
+calculating described metrics is available <a href="https://github.com/lbownik/primitive-quality">here</a>.</strong></p>
+</section>
+<section>
+<h2>Rapid ACC estimation</h2>
+<p>The method presented above is time consuming. In order to estimate Average
+Covered Complexity quickly, one can use
+<a href="https://en.wikipedia.org/wiki/Mutation_testing">mutation testing</a>
+system (like <a href="https://pitest.org">pitest.org</a>).
+Mutation testing involves modifying a code under test in various, small ways.
+Each mutated version is called <em>mutant</em>. Each mutant is then executed
+under unmodified test suite. If the test suite fails then the mutant is
+<em>killed</em>, otherwise the mutant <em>survives</em> which means the test
+suite is not able to detect altered behavior. The mutation testing system
+reports all survived and killed mutations as depicted in Figure 2.</p>
+<figure>
+<img src="pitest.png" alt="pitest"/>
+<figcaption>Figure 2. Mutation testing report (pitclipse).</figcaption>
+</figure>
+<p>A <strong>high</strong> “survived-to-killed” ratio (over 1) denotes
+<strong>low</strong> ACC as many use cases do not get exercised.
+A <strong>low</strong> “survived-to-killed” ratio (below 1, eg 30/168 = 0.178)
+denotes <strong>high</strong> ACC, which means high quality test suite
+(“survived-to-killed” is kind of opposite to ACC). The weakness of this method
+is that low “survived-to-killed” ratio does not take test suite redundancy into
+account so in extreme cases ACC can be actually closer to 50% due to many
+redundant tests present.</p>
+</section>
+<section>
+<h2>Conclusion</h2>
+<p>The presented combined metrics (code coverage and average covered complexity)
+provide some qualitative insight into the quality of a test suite, but it is
+important to note, that average covered complexity is just a rough estimate
+that may vary considerably. It is only representative if the set of examined
+test cases is representative of the entire suite and depends on the examiner’s
+arbitrary estimates of particular test cases. Nevertheless, both metrics combined
+give a better picture of test suite quality than code coverage alone.</p>
+<p>An example spreadsheet has been attached to this article.</p>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" aria-hidden="true" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
