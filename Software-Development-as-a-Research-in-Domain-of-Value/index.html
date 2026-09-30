@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Software Development as a Research in the Domain of Value</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+pre {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffe8;
+    line-height: 1.1;
+}
+code {
+    color: #905;
+}
+header {
+    color: #808080;
+}
+
+table {
+    border-collapse: collapse;
+    text-align: left;
+}
+table tr td {
+    border: solid 1px;
+    padding: 10px;
+}
+
+table tbody tr td ul {
+    list-style-type: none;
+    padding-inline-start: 0px;
+}
+
+table thead {
+    background: lightgrey;
+}
+table thead tr th {
+    border: solid 1px;
+    padding: 10px;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject in 2021</p>
+</header>
+<main>
+<article>
+<section>
+<h1>Software Development as a Research in the Domain of Value</h1>
+</section>
+<section>
+<h2>Disclaimer</h2>
+<p>This article is my personal opinion about the nature of software development.
+This is not intended to be a scientific paper so many statements are intentionally
+bold and direct to make the text short. I did my best to present the nature of
+software development based on my own observations and available sources, but I am
+not a business theoretician, science philosopher nor sociologist, and I may be
+totally wrong. Additionally, this probably does not apply to all kinds of software
+(e.g., embedded), but in my opinion, covers at least the business application
+development process. Moreover, this article is unavoidably written from the
+developer perspective, though I would like to know other perspectives as well.</p>
+<p  style="margin-left: 40px"><em>“Our real discoveries come from chaos, from
+going to the place that looks wrong and stupid and foolish.”</em><br>
+―<strong>Chuck Palahniuk</strong></p>
+</section>
+<section>
+<h2>Acknowledgments</h2>
+<p>I’d like to thank Mr. <a href="https://www.linkedin.com/in/gerardvgarcia">Gerard Garcia</a>
+for all the valuable comments he provided.</p>
+</section>
+<section>
+<h2>It All Starts With Needs</h2>
+<p>According to <a href="https://en.wikipedia.org/wiki/Need">Wikipedia</a>,
+<i>“A <b>need</b> is something that is necessary for an organism to live a healthy
+life. […] in the case of a need, a deficiency causes a clear adverse outcome:
+a dysfunction or death […], a need is something required for a safe, stable and healthy life […]”</i>.
+In the case of software development, there are three major symbiotic organisms
+(also called stakeholders) coexisting together and benefiting from a developed
+solution, which I define as <b>software and any other supporting artifacts</b>
+(documents, procedures, policies, …). These organisms are:</p>
+<ul>
+    <li>customer – an entity or entities, whose needs drive the development of a
+        solution, and who benefits from deploying it;</li>
+    <li>business – an entity or entities, that benefit from providing a solution
+        (owner, shareholders, management, …);</li>
+    <li>developer – an entity or entities that benefit from building the solution
+        (programmers, architects, analysts, quality engineers, …).</li>
+</ul>
+<p>There can be more organisms, like for example “operations”, but I’ll keep
+three for simplicity.</p>
+<p>Each of these three organisms has its own set of needs which should be satisfied
+with the solution provided by the company.</p>
+<figure>
+<img src="needs_of_stakeholders.png" alt="needs of stakeholders"/>
+<figcaption>Figure 1. The needs of stakeholders.</figcaption>
+</figure>
+<p>For <b>customer</b>, the most important needs the solution must satisfy are:</p>
+<ul>
+    <li><strong>Utility</strong> – which denotes how well the solution solves a
+        problem the particular customer has. In case of software, a utility can
+        be decomposed into provided functionality, convenience, performance,
+        reliability and so on;</li>
+    <li><strong>Flexibility</strong> – which denotes how well the solution adapts
+        to the new challenges that customer faces. It can be generally expressed
+        as a readiness and response time to change requests;</li>
+    <li><strong>Affordability</strong> – which can generally be expressed as a
+        need to achieve a positive return of investment.</li>
+</ul>
+<p>For <b>business</b>, the most important needs the solution must satisfy are:</p>
+<ul>
+    <li><strong>Profit</strong> – measured with financial benefit required to maintain business;</li>
+    <li><strong>Predictability</strong> – which denotes how stable the internal
+        and external environment of the company is;</li>
+    <li><strong>Growth</strong> – which prevents stagnation and decay.</li>
+</ul>
+<p>For <b>developer</b>, the most important <a href="https://www.youtube.com/watch?v=u6XAPnuFjJc">needs</a>
+the solution must satisfy are:</p>
+<ul>
+    <li><strong>Income</strong> – for support of the life and well-being of the
+        developer (corresponds to two lowest levels of 
+        <a href="https://en.wikipedia.org/wiki/Maslow%27s_hierarchy_of_needs">Maslow’s hierarchy</a>);</li>
+    <li><strong>Autonomy</strong> – which can be translated to the need of having
+        control over the environment (corresponds to the second level of Maslow’s hierarchy);</li>
+    <li><strong>Mastery</strong> – which involves the improvement of one’s skills
+        (corresponds to the two highest levels of Maslow’s hierarchy) and performing quality work;</li>
+    <li><strong>Purpose</strong> – which translates to a need for
+        <a href="https://en.wikipedia.org/wiki/12_Rules_for_Life"> higher meaning,
+        justification of undertaken efforts, and improvement of the future.</a></li>
+</ul>
+<p>All these needs have to be satisfied to some extent by software solution for
+this symbiosis to flourish. Failure to satisfy some needs results in failure to
+satisfy others causing a potential domino effect and an end of symbiosis.</p>
+</section>
+<section>
+<h2>No Need Is an Island</h2>
+<p>Needs are related in a manner that when one need gets satisfied, the potential
+ability to satisfy another need is amplified. On the other hand, failure to
+satisfy one need causes potential failure to satisfy another. An example of a
+relation would be higher Flexibility enabling an increase in Profit, as more
+features can be sold to customers.</p>
+<p>The following figure presents this concept, where ovals represent needs, lines
+represent relations and arrows denote the direction of (potential) positive or
+negative amplification (assuming all other factors constant).</p>
+<figure>
+<img src="needs_compatibility.png" alt="needs compatibility"/>
+<figcaption>Figure 2. Relations between needs (for explanation see Appendix)</figcaption>
+</figure>
+<p>As mentioned before, the amplification may be negative. In this situation, a
+failure to satisfy one need causes failures to satisfy others. The following
+example diagram (which is a derivative of Figure 2) shows, how low quality of
+code fails to satisfy the need for Flexibility. This causes ripple effects on the
+whole set propagating along relation lines. The negative impact is denoted by the
+intensity of the grey color (more gray equals more impact), and the process is
+divided into stages marked by red vertical lines as impact takes time to propagate
+losing its value along the way.</p>
+<figure>
+<img src="low_code_quality.png" alt="low code quality"/>
+<figcaption>Figure 3. An unsatisfied need and its consequences
+(one of the possible expansions of the graph from figure 2)</figcaption>
+</figure>
+<p>Low quality is generally attributed to a code that is difficult to understand
+and modify. This impacts <b>Flexibility</b>, as a company is not able to react
+quickly to changing customer needs. <b>Flexibility</b> impacts <b>Profit</b>,
+<b>Predictability</b> and <b>Growth</b>, as the product may lag behind the
+competition, budgets and schedules get overrun and the ability to adapt to new
+markets or generate product spin-offs is lowered. Lower <b>Profit</b> impacts
+<b>Affordability</b> as the company’s ability to compete with the price is reduced.
+It also impacts <b>Utility</b> as new features, optimizations or other improvements
+get delayed. It also impacts <b>Income</b> since a tight budget may force the
+company to reach for the cheaper workforce or cut existing benefits.
+Lower <b>Profit</b> impacts <b>Autonomy</b>, because when the budget gets tighter,
+control mechanisms get tighter as well. Finally, it impacts <b>Mastery</b>,
+when training opportunities diminish and the pace of work gets more important
+than quality. Lower <b>Predictability</b> impacts <b>Income</b> in a sense that
+the company tends to cut development costs to increase the financial buffer.
+It also impacts <b>Autonomy</b> as the natural management reaction is to increase
+planning, reporting, and accounting accuracy. Lower <b>Growth</b> or stagnation
+impacts <b>Mastery</b>. When no growth is planned, short term stop-gap solutions
+are more appreciated. Finally, lower <b>Utility</b> and <b>Growth</b> impact
+<b>Purpose</b>, since developers lose the feeling that they are building
+something useful for the future.</p>
+<p>The presented example is actually <b>simplified</b> since some relations have
+been omitted for clarity. In a real situation, the feedback gets propagated
+along all lines (see Figure 2) until corrective action is taken or the company
+gets in trouble.</p>
+<p>Another <b>simplified</b> example below shows how a lack of business vision
+impacts the need for <b>Growth</b>, and how this negative impact propagates along
+relation lines. I’ll leave the proof of this process as an exercise to the reader
+(using the table from Appendix).</p>
+<figure>
+<img src="lack_of_vision.png" alt="lack of vision"/>
+<figcaption>Figure 4. Another unsatisfied need and its consequences (one of the
+possible expansions of the graph from figure 2)</figcaption>
+</figure>
+</section>
+<section>
+<h2>From Needs to Values</h2>
+<p>In the context of software development, let’s define value as anything that
+satisfies a need (which is somewhere between ethical definition of
+<a href="https://en.wikipedia.org/wiki/Value_(ethics)">value</a> and economic
+definition of <a href="https://en.wikipedia.org/wiki/Utility">utility</a>).
+The better something (an artifact, event, process, material object, etc.)
+satisfies a need, the higher value it represents.</p>
+<p>The most common values satisfying the presented needs in context of software
+can be summarized as follows (the list is not exhaustive, and many values usually
+satisfy more than one need):</p>
+<ul>
+    <li>for Utility – software functionality, operation speed, usability, low
+        failure rate, low defect rate, user training, alignment with business process</li>
+    <li>for Flexibility – readiness to accept change requests, speed of development,
+        quality of communication</li>
+    <li>for Affordability – affordable license price, stable pricing, flexible pricing</li>
+    <li>for Profit – raw monetary value, stability of profit, customer retention rate</li>
+    <li>for Predictability – transparent development process, employee retention rate,
+        customer retention rate, stability of cost, readiness to accept change
+        requests, speed of development</li>
+    <li>for Growth – customer base growth, product portfolio growth</li>
+    <li>for <a href="https://www.inc.com/jeff-haden/the-7-undeniable-truths-of-employee-pay.html">Income</a>
+        – raw monetary value, the regularity of payments, benefits</li>
+    <li>for Autonomy – transparent scheduling, work time flexibility, trust</li>
+    <li>for Mastery – training, appreciation of quality, freedom of initiatives</li>
+    <li>for Purpose – alignment with personal values, appreciation from a customer,
+        appreciation from business</li>
+</ul>
+<p>The goal of a successful symbiosis is to produce as much value as possible
+for all three organisms while <b>keeping the optimal balance</b> among all of the needs.</p>
+</section>
+<section>
+<h2>Software Development as Research Activity</h2>
+<p>In order to find values that may best satisfy stakeholders’ needs, software
+development team has to actively search through and evaluate all possible
+solutions. As needs change over time, there is a constant interactive pursuit
+of a moving target. Because of this, software development resembles applied
+scientific research, where exploring the unknown creates something new
+(otherwise existing software would be reused). Software development process
+phases can be mapped to phases of <a href="https://www.khanacademy.org/science/high-school-biology/hs-biology-foundations/hs-biology-and-the-scientific-method/a/the-science-of-biology">scientific research</a>,
+though vocabulary used by both communities is different.</p>
+<figure>
+<img src="process.png" alt="process"/>
+<figcaption>Figure 5. Software development vs scientific research process stages.</figcaption>
+</figure>
+<p>The stages of software solution development and scientific research resemble
+each other in the following manners:</p>
+<ul>
+    <li><b>bid or feature request</b>, being the initial observation of customer’s need,
+        is equivalent to interpretation of observation (what we actually see)
+        in scientific research</li>
+    <li><b>requirements/business analysis</b>, being the problem bounding phase,
+        is equivalent to formulation of the right question that properly nails
+        the observed problem</li>
+    <li><b>design + implementation</b> phase is equivalent to hypothesis proposal
+        and making predictions of how to satisfy customer’s needs and with what
+        consequences. It is a rapid iteration of mental construction and mental
+        experiments, that explore the multidimensional space of possible
+        solutions using <a href="https://en.wikipedia.org/wiki/Heuristics_in_judgment_and_decision-making">heuristics</a>.
+        This similarity is clearly visible, when one observes how design and
+        code (being essentially the same at different layers of abstraction)
+        tend to verify and influence each other rapidly until the work is finally
+        considered finished.</li>
+    <li>finally, <b>deployment</b> is an experiment that verifies hypothesis and
+        predictions, mostly expressed in a form of software. Technical and
+        functional assumptions get verified, and new change requests get formulated.</li>
+</ul>
+</section>
+<section>
+<h2>Taming Chaos</h2>
+<p>Research, being by its nature a <a href="https://en.wikipedia.org/wiki/Creativity">creative</a>
+process, is <a href="https://www.tandfonline.com/doi/full/10.1080/09505431.2018.1485640">inherently
+unpredictable and cannot guarantee success</a> (as having good ideas is never guaranteed).
+Since software development strongly resembles (or to state it boldly, actually is)
+an applied scientific research, uncertainty is inherent to both the overall
+process and to every phase of software development.</p>
+<p>A bid or feature request is often an <a href="https://en.wikipedia.org/wiki/Open-ended_question">open-ended question</a>
+that can be answered only approximately considering the amount of information
+possessed at this stage. Ironically, scope and cost are usually fixed at this
+stage, when a project is just a ”guess”. The duration and effects of this phase
+cannot be predicted and is strongly affected by number of parties involved,
+geographic location, communication effectiveness, business strategies,
+economic state and other.</p>
+<p>The requirements/business analysis is iterative by nature, as one loops until
+some acceptance threshold gets satisfied which is usually just a collective
+“gut feeling” of participants (sometimes called
+<a href="https://en.wikipedia.org/wiki/Minimum_viable_product">minimum viable product</a>).
+Requirements completeness is always an open-ended problem anyway, no matter how
+much time is spent on analysis. The duration (number of iterations) and effects
+of this phase is strongly affected by a number of parties involved, geographic
+location, weather, availability of domain experts, communication effectiveness,
+tools availability or competence of experts (it happens that customer designates
+the least competent person as a domain expert).</p>
+<p>The duration and outcome of design + implementation depends on quality of requirements,
+communication, skills, quality of existing code and design, and
+<a href="/The-Psychological-Reasons-for-Software-Project-Failures">competence of participating people</a>.
+This stage requires high dose of <a href="https://en.wikipedia.org/wiki/Creativity">creativity</a>,
+<a href="https://en.wikipedia.org/wiki/Conscientiousness">conscientiousness</a> and
+<a href="https://en.wikipedia.org/wiki/Openness_to_experience">openness</a>, and
+is impacted by the same issues as the previous one.</p>
+<p>The unpredictability of deployment phase duration and outcome comes mainly
+from inability to enforce pace of adoption by customer, but communication makes
+a big impact as well.</p>
+</section>
+<section>
+<h2>The Production Line Fallacy</h2>
+<p>Many companies make a mistake thinking that the construction of software-based
+solutions is like <a href="https://en.wikipedia.org/wiki/Toyota_Production_System">mass production of cars</a>.
+The issue is that production of cars is the process of making many instances of
+a known thing (body, engine, wheels, etc.) with some variability in terms of
+features and materials. The problem is generally well understood and scoped,
+methods well mastered and standards externally enforced. Because of that, many
+managers make a mistake that applying a well-defined process to software development
+will eventually lead to success. They think that strict adherence to currently
+fashionable process (eg. <a href="https://en.wikipedia.org/wiki/Scrum_(software_development)">SCRUM</a>),
+by a hoard of <a href="/The-Psychological-Reasons-for-Software-Project-Failures">pigeonholed production-line</a>
+workers will lead to success.</p>
+<p>In the light of what was said before, this is a fallacy as
+<a href="https://www.youtube.com/watch?v=lA-zdh_bQBo"><b>no process can substitute
+peoples’ intelligence, knowledge, experience and dedication</b></a>. Moreover,
+an inappropriate process can suppress all these required qualities, resulting in
+worse results than no process at all. Translated into the realm of research this
+means that no amount of ordinary Joes, following even the most sophisticated process,
+can substitute one <a href="https://en.wikipedia.org/wiki/Albert_Einstein">Einstein</a>,
+because “<a href="https://en.wikipedia.org/wiki/Elbert_Hubbard">One machine can
+do the work of fifty ordinary men, [but] no machine can do the work of one
+extraordinary man</a>”, where a software-factory-line can be imagined as a machine
+itself. On the other hand, if one finds <b>intelligent, knowledgeable, experienced
+and dedicated people</b> and <a href="https://www.youtube.com/watch?v=XWVwFVgA4b4">present them a goal</a>,
+they will usually come up with a reasonable <b>minimal process</b> (which doesn’t
+mean “lightweight”, but rather “appropriately tailored”), that will lead them
+there <b>without much supervision</b>. Yet in reality most project<i>
+<a href="http://www.vpri.org/pdf/m2004001_power.pdf">administrators seem to prefer 
+to be completely in control of mediocre processes to being "out of control"
+with super-productive processes</a>.</i></p>
+</section>
+<section>
+<h2>Best Effort Everywhere</h2>
+<p>Software development similarly to applied scientific research is a
+best-effort process with unpredictable time frame and results. There are risk
+mitigation techniques that can be used
+(<a href="https://en.wikipedia.org/wiki/Extreme_programming">off-the-shelf
+components, design patterns, best practices, quality enforcement, project review
+procedures, short iterations</a>, insurance, overbidding, etc.), but
+<b>inherent uncertainty cannot be eliminated</b>. This suggests that management
+strategies applied to both scientific research and software development should be
+similar and based on employing, the
+<a href="/The-Psychological-Reasons-of-Software-Project-Failure">right people</a>,
+providing appropriate means and
+<a href="https://www.castsoftware.com/research-labs/risk-management-in-software-development-and-software-engineering-projects">managing risk</a>.</p>
+</section>
+<section>
+<h2>The “metaprocess”</h2>
+<p>The article may seem to suggest that we should abandon all hope of successful
+and predictable software development, but this is not true. The success can be
+achieved by acknowledging and embracing the coexistence of chaotic and predictable
+parts interleaved within a recursive “metaprocess” just as
+<a href="https://en.wikipedia.org/wiki/Yin_and_yang">Yin-Yang</a> combines order
+and chaos together.</p>
+<figure>
+<img src="metaprocess.png" alt="metaprocess"/>
+<figcaption>Figure 6. The intangible recursive “metaprocess” a.k.a iterative
+development (predicable phase adheres to a smaller “metaprocess”).</figcaption>
+</figure>
+<p>The intangible “metaprocess” is driven by <strong>intelligence, knowledge,
+experience and dedication of people involved</strong>. On one hand it is
+disturbing as no strict control can be imposed on it. On the other hand it is
+liberating as both peoples’ creativity and orderliness can intermittently take
+part in it. The positive side is that intelligence, knowledge, experience and
+dedication are factors which tremendously mitigate the inherent unpredictability
+and chaos. On one hand, people can better aim at their targets by avoiding doing
+useless or harmful things (which they are able to recognize better and faster).
+On the other hand they tend to rigorously pay attention to quality of work while
+conducting experiments/designing, writing and testing code (since they understand
+the value of quality artifacts being produced in correct order).</p>
+</section>
+<section>
+<h2>P.S. Beware of False Values</h2>
+<p>Approaching software development from value perspective may have some dangerous
+consequences if not done carefully, because there are some values that turn out
+to be false and eventually deadly when adopted by enterprise.</p>
+<p>One of such values, often stated explicitly in corporate code of conduct, is
+courtesy, understood as the showing of politeness in one's attitude and behavior
+toward others. Courtesy is important value in social terms as it fosters stability
+of society by preventing uncontrolled explosions of aggression. The problem is
+that enterprises and societies operate in different realities. For a society,
+it is more important to be stable than efficient, because (at least in the
+contemporary world) societies do not reside in a Darwinian world of
+<a href="https://en.wikipedia.org/wiki/Natural_selection">natural selection</a>.
+Companies on the other hand, live in a competitive world of aggressive natural
+selection called “<a href="https://en.wikipedia.org/wiki/Free_market">free market</a>”.
+In such a world, it is far more important to be efficient than polite.
+A healthy company shall always praise <b>constructive argument</b> over <b>polite consensus</b>,
+as the first leads to creative solutions and the last to
+<a href="https://hbr.org/1986/09/skilled-incompetence">skilled incompetence</a>.</p>
+</section>
+<section>
+<h2>Appendix</h2>
+<p>The following table explains the relations between needs as defined in the
+second chapter.</p>
+<table>
+<thead>
+     <tr><td>Need-to-need relation</td><td>Amplification of Success</td><td>Amplification of Failure</td></tr>
+</thead>
+<tbody>
+     <tr><td>Affordability → Growth</td><td>Low or flexible prices foster market share growth</td>
+        <td>High or inflexible prices hamper market share growth.</td></tr>
+    <tr><td>Affordability → Predictability</td><td>Low or flexible prices make solution immune to market turbulence</td>
+        <td>High or inflexible prices make solution vulnerable to market turbulence</td></tr>
+    <tr><td>Autonomy → Flexibility</td><td>High developer autonomy fosters a creative approach to change</td>
+        <td>Low developer autonomy hampers creative approach to change</td></tr>
+    <tr><td>Autonomy → Growth</td><td>High developer autonomy fosters creative approach to product(s)</td>
+        <td>Low developer autonomy hampers creative approach to product(s)</td></tr>
+    <tr><td>Autonomy → Mastery</td><td>High developer autonomy motivates skill improvement</td>
+        <td>Low developer autonomy hinders skill improvement</td></tr>
+    <tr><td>Autonomy → Utility</td><td>High developer autonomy fosters a creative approach to customer problems</td>
+        <td>Low developer autonomy hampers creative approach to customer problems</td></tr>
+    <tr><td>Flexibility → Growth</td><td>The ability to change opens opportunities to grow.</td>
+        <td>Inability to change wastes opportunities to grow.</td></tr>
+    <tr><td>Flexibility → Predictability</td><td>Ability to change makes effort more predictable</td>
+        <td>Inability to change makes effort less predictable</td></tr>
+    <tr><td>Flexibility → Profit</td><td>Ability to change encourages customers to pay for change</td>
+        <td>Inability to change discourages customers to pay for change</td></tr>
+    <tr><td>Flexibility → Utility</td><td>Ability to change allows keeping alignment with customer needs</td>
+        <td>Inability to change prevents keeping alignment with customer needs</td></tr>
+    <tr><td>Growth → Mastery</td><td>Expansion motivates developers for self-improvement</td>
+        <td>Stagnation demotivates developers for self-improvement</td></tr>
+    <tr><td>Growth → Purpose</td><td>The expansion gives developers the feeling of building future</td>
+        <td>Stagnation deprives developers of the feeling of building future</td></tr>
+    <tr><td>Income → Flexibility</td><td>High salary motivates developers for taking initiative and long term thinking</td>
+        <td>Low salary demotivates developers for any actions beyond the minimum</td></tr>
+    <tr><td>Income → Predictability</td><td>High salary motivates developers for taking initiative and long term thinking</td>
+        <td>Low salary demotivates developers for any actions beyond the minimum</td></tr>
+    <tr><td>Income → Utility</td><td>High salary fosters active approach to customer problems</td>
+        <td>Low salary hinders active approach to customer problems</td></tr>
+    <tr><td>Mastery → Affordability</td><td>High skills reduce the time of development</td>
+        <td>Low skills prolong the time of development</td></tr>
+    <tr><td>Mastery → Flexibility</td><td>High skills foster technically flexible solutions</td>
+        <td>Low skills hamper technically flexible solutions</td></tr>
+    <tr><td>Mastery → Predictability</td><td>High skills make development easier</td>
+        <td>Low skills make development difficult</td></tr>
+    <tr><td>Mastery → Utility</td><td>High skills allow meeting customer needs</td>
+        <td>Low skills allow only what is currently doable.</td></tr>
+    <tr><td>Predictability → Autonomy</td><td>Stable companies are more willing to trust developers</td>
+        <td>Unstable companies are more willing to control developers</td></tr>
+    <tr><td>Predictability → Growth</td><td>Stable companies can plan long term growth</td>
+        <td>Unstable companies tend to secure existing market positions</td></tr>
+    <tr><td>Predictability → Income</td><td>Stable companies can afford higher salaries and benefits</td>
+        <td>Unstable companies save on salaries and benefits</td></tr>
+    <tr><td>Profit → Affordability</td><td>Rich companies can compete with the price</td>
+        <td>Poor companies cannot compete with price</td></tr>
+    <tr><td>Profit → Autonomy</td><td>Rich companies are more willing to trust developers</td>
+        <td>Poor companies are more willing to control developers</td></tr>
+    <tr><td>Profit → Growth</td><td>Rich companies can plan long term growth</td>
+        <td>Poor companies struggle to secure existing market positions</td></tr>
+    <tr><td>Profit → Income</td><td>Rich companies can afford higher salaries and benefits</td>
+        <td>Poor companies save on salaries and benefits</td></tr>
+    <tr><td>Profit → Mastery</td><td>Rich companies can afford training and invest in quality</td>
+        <td>Poor companies save on training and quality</td></tr>
+    <tr><td>Profit → Utility</td><td>Rich companies have means to develop costly features</td>
+        <td>Poor companies do not have means to develop costly features</td></tr>
+    <tr><td>Purpose → Flexibility</td><td>Appreciation fosters a creative approach to change</td>
+        <td>Lack of appreciation hampers creative approach to change</td></tr>
+    <tr><td>Purpose → Growth</td><td>Appreciation fosters a creative approach to product(s)</td>
+        <td>Lack of appreciation hampers creative approach to product(s)</td></tr>
+    <tr><td>Purpose → Mastery</td><td>Appreciation motivates developers for self-improvement</td>
+        <td>Lack of appreciation demotivates developers for self-improvement</td></tr>
+    <tr><td>Purpose → Predictability</td><td>Appreciation motivates adherence to schedules</td>
+        <td>Lack of appreciation demotivates adherence to schedules</td></tr>
+    <tr><td>Utility → Predictability</td><td>A solution that meets customer needs has strong market position</td>
+        <td>A solution that fails to meet customer needs has a weak market position</td></tr>
+    <tr><td>Utility → Profit</td><td>A solution that meets customer needs can be sold for more</td>
+        <td>A solution that fails to meet customer needs to be cheap to justify a purchase</td></tr>\
+    <tr><td>Utility → Purpose</td><td>A solution that meets customer needs gives developers the feeling of being useful</td>
+        <td>Solution that fails to meet customer needs deprives developers of the feeling of being useful</td></tr>
+</tbody>
+</table>
+<br/>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" aria-hidden="true" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
