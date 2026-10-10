@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Software Companies Die</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+
+header {
+    color: #808080;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject in 2021</p>
+</header>
+<main>
+<article>
+
+<section>
+<h1>Why Software Companies Die</h1>
+</section>
+<section>
+<h2>Disclaimer</h2>
+<p>This article is my personal opinion about the reasons for software companies’
+deaths. This is not intended to be a scientific paper so many statements are
+intentionally bold and direct to make the text short. I did my best to present
+the conclusions based on my own observations and available sources, but I am
+not a professional sociologist, ecologist or business theoretician and may be
+totally wrong. Additionally, I have no data to back these statements, so treat
+them with a dose of skepticism.</p>
+<p>All citations come from
+<a href="https://en.wikipedia.org/wiki/Collapse:_How_Societies_Choose_to_Fail_or_Succeed">Collapse: How Societies Choose to Fail or Succeed</a>
+unless specified otherwise.</p>
+<p><i>"Whoever wishes to become a philosopher must learn not to be frightened by absurdities."</i><br>
+― Bertrand Russell</p>
+<p><i>"Those who cannot remember the past are condemned to repeat it."</i><br>
+- George Santayana</p>
+<section>
+<section>
+<h2>A Boiling Cauldron</h2>
+<p>The world of software business is a boiling cauldron. Some companies grow
+rapidly, others disappear almost instantly, and some of them, usually the big
+ones, stagnate and wither slowly. There is very little stability in the business
+of software. Companies that were dominant market players (like Netscape) do not
+exist anymore. The ones at the top today were not here two decades ago. It seems
+that very few of them manage to successfully sustain in the long term.</p>
+<p>This made me think: what are the reasons which make successful software
+companies diminish into oblivion almost overnight? The reasons couldn’t be purely
+technological. Computers haven’t changed their principles of operation since they
+were invented. They are just "overcomplicated
+<a href="https://en.wikipedia.org/wiki/Music_box">music boxes</a>", that simply
+get faster and more energy efficient every year. The very basic principles of
+building software haven’t changed much either (every program is a combination
+of <a href="https://www.youtube.com/watch?v=58jGpV2Cg50">sequences, selections and iterations</a>).
+Even the recently fashionable functional programming dates back to
+<a href="https://en.wikipedia.org/wiki/Lisp_(programming_language)">1958</a>.
+A software company consists of people writing code. If the basis of technology
+is generally stable (quantum computers are not on every desk yet), then the
+reasons for software business failures must be human related in nature, or in
+other words, social.</p>
+</section>
+<section>
+<h2>Companies and Societies</h2>
+<p>The first question I needed to ask was whether a software company can be
+treated as a small society and if yes do the same rules apply. According to
+<a href="https://en.wikipedia.org/wiki/Society">Wikipedia</a>, <i>"a society is
+a group of individuals involved in persistent social interaction, or a large social
+group sharing the same spatial or social territory, typically subject to the same
+political authority and dominant cultural expectations. Societies are characterized
+by patterns of relationships (social relations) between individuals who share a
+distinctive culture and institutions; a given society may be described as the
+sum total of such relationships among its constituent of members."</i> On the
+other hand, the definition of company is rather modest and states that a
+<a href="https://en.wikipedia.org/wiki/Company">company</a> is <i>"a legal
+entity representing an association of people, whether natural, legal or a mixture
+of both, with a specific objective. Company members share a common purpose and
+unite to achieve specific, declared goals."</i> These two definitions, even though
+expressed differently bare significant resemblance to me. Both societies and companies:</p>
+<ul>
+    <li>are groups of people (individuals);</li>
+    <li>occupy some social space or territory (a location);</li>
+    <li>are subject to authority (management structure);</li>
+    <li>are subject to cultural expectations (business processes and codes of conduct);</li>
+    <li>unite individuals to achieve a common goal (provide means to sustain existence of these individuals).</li>
+</ul>
+<p>These similarities made me look for possible social reasons of collapses of
+software companies.</p>
+</section>
+<section>
+<h2>A Book of Gloomy Stories</h2>
+<p>Jared Diamond in his fascinating book
+<a href="https://en.wikipedia.org/wiki/Collapse:_How_Societies_Choose_to_Fail_or_Succeed">Collapse: How Societies Choose to Fail or Succeed</a>
+investigated multiple past civilizations that experienced a successful growth
+followed by rapid collapse. By investigating (among others) civilizations of
+<a href="https://en.wikipedia.org/wiki/Easter_Island">Easter Island</a>,
+<a href="https://en.wikipedia.org/wiki/Chaco_Culture_National_Historical_Park">Chaco Canyon</a>,
+<a href="https://en.wikipedia.org/wiki/Maya_civilization">Maya</a> or
+<a href="https://en.wikipedia.org/wiki/Greenlandic_Norse">Greenlandic Norse</a>
+he created a 5 factor framework which combines the most impactful reasons of
+societal collapse. The reasons formulated by Diamond are:</p>
+<ul>
+    <li><b>environmental damage</b> caused by society, which manifests itself
+        in environmental productivity below what is needed to sustain the
+        population (mainly deforestation, soil erosion, overhunting, overfishing
+        and water mismanagement);</li>
+    <li><b>climate change</b> which impacts food production;</li>
+    <li><b>rise of hostile neighbors</b> posing physical threat to society;</li>
+    <li><b>collapse of friendly neighbors</b> on whose support the society depends;</li>
+    <li><b>inability to change the conduct of operations</b> in face of above threats.</li>
+</ul>
+<p>Figure 1 represents this concept visually. Red color indicates factors the
+society cannot control. Blue color indicates factors controllable by society.
+The "collapse of friendly neighbors" is a factor the society can partially
+control by supporting the neighbor in need.</p>
+<figure>
+<img style="max-width: 320px" src="5factor_framework.png" alt="5 factor framework"/>
+<figcaption>Figure 1. Jared Diamond's 5-factor framework.</figcaption>
+</figure>
+<p>The profound conclusion from the book <i>"is that a society's steep decline
+may begin only a decade or two after the society reaches its peak numbers, wealth,
+and power. The reason is simple: maximum population, wealth, resource consumption,
+and waste production mean maximum environmental impact, approaching the limit
+where impact outstrips resources."</i> Do software companies share the same fate
+for the same reasons?</p>
+</section>
+<section>
+<h2>Different Yet the Same</h2>
+<p>After pointing out similarities between societies and companies, I came to the
+conclusion that Diamond’s framework can be adapted to explain failures of software
+companies. Figure 2 presents the adapted framework.</p>
+<figure>
+<img src="5factor_framework_for_software_companies.png" 
+    alt="5 factor framework for software companies"/>
+<figcaption>Figure 2. A 5-factor framework describing reasons for software
+company collapse.</figcaption>
+</figure>
+<p>Some of the depicted adaptations are straightforward and obvious while others
+require more explanation provided below.</p>
+</section>
+<section>
+<h3>Environmental Damage</h3>
+<p>Jared Diamond has specified environment destruction as a main culprit of societal
+collapse. It’s mostly repeating incarnation was soil erosion caused by deforestation
+or, more generally, devastation of natural vegetation. This in effect caused
+progressing food shortages leading to hunger, famine and civil war. This made
+me think about what the equivalent of soil is for a software company. If soil
+allows growing crops, and brings food to a table, then what brings food to
+software companies? The food for software vendors are features they can sell to
+customers, and new features are "grown" within the existing codebase just like
+crops are grown in soil. This means that the equivalent of soil erosion is source
+code erosion accompanied by erosion of other artifacts like documentation and
+architectural integrity. This analogy does not hold at the beginning of product
+development, before initial release, but in my opinion it holds throughout most
+of the lifetime of software companies.</p>
+<p>An <b>eroded source code</b> is a one which is difficult to understand, vague
+in function, chaotic in structure and generally <b>difficult to change</b>.
+Just like a society which needs to grow crops in the same soil every year, a
+software company needs to repeatedly adjust its software product (to meet changing
+market demands) by modifying its existing codebase. In case of eroding soil,
+it takes more and more effort to grow less and less crops per year. In case of
+an eroded codebase, it requires more and more effort to deliver a shrinking number
+of adaptations per year. If the process continues, it is inevitable that at some
+point, costs outgrow the
+<a href="/articles/Software-Development-as-a-Research-in-Domain-of-Value">produced value</a>.</p>
+<p>Another closely related issue described by Diamond is water mismanagement.
+Without quality water, it is impossible to grow crops, but what is the equivalent
+of water in context of software development? If crops grow in soil thanks to water
+(sunlight taken for granted), then new features and adaptations grow within existing
+codebase thanks to programmers. Developer erosion (manifested as shortage or
+<a href="/articles/The-Psychological-Reasons-for-Software-Project-Failure">low competence</a>)
+means that a limited number or even no features can be "grown" within the existing
+codebase just like a shortage, or contamination (e.g., salination) of water prevents
+reals crops from growing. Developer erosion can be caused by bad company policies
+or bad management practices, but is often caused by code erosion, as best programmers
+eventually get frustrated and leave because their basic
+<a href="/articles/Software-Development-as-a-Research-in-Domain-of-Value">needs don’t get satisfied</a>.
+Developer erosion amplifies code erosion as new hires are not intimate with the
+code base and tend to simply patch it in order to mitigate risk of introducing new defects.
+This situation can turn into a
+<a href="https://en.wikipedia.org/wiki/Positive_feedback">vicious circle</a>.
+Eroding codebase encourages the best developers to leave first. Then new hires
+compromise the codebase even more, which again causes the next group of remaining
+good programmers to leave and so on. High turnover may also hurt the company’s
+image, reducing the probability of hiring experienced programmers ("a company
+for interns" syndrome) and tighten the spiral of death as depicted in Figure 3.</p>
+<figure>
+<img src="vicious_circle_of_erosion.png" alt="vicious circle of erosion"/>
+<figcaption>Figure 3. Vicious circle of erosion.</figcaption>
+</figure>
+<p>Developer erosion has another hidden deadly result, which is the growth of
+cost per "unit of change" (a new feature or adaptation). Let’s consider a company
+employing 25 developers and able to deliver hypothetical 100 "units of change"
+(new features and adaptations) per year. Let’s also assume that the cost of one
+developer is $1000 a year. The cost of development per "unit of change"
+is $1000 * 25/100 = $250. Now let’s assume that the eroded code base causes
+frustration among developers and five of them leave. It is highly probable that
+the ones who left were the best, most productive ones as they have the most
+available options. If so, then according to
+<a href="https://en.wikipedia.org/wiki/Derek_J._de_Solla_Price">Price’s law</a>,
+the productivity of the remaining 20 developers is only 50 "units of change" per
+year (not 80 as numbers might suggest). This alters the cost of development per
+"unit of change" to $1000 * 20/50 = $400. Let’s assume the company’s income is
+proportional to delivered "units of change" per year. This is a reasonable
+assumption where a longer time span is concerned, as not keeping up with changing
+demands makes it harder to get new customers and easier to lose existing ones.
+If the hypothetical income is $1000 per "unit of change", then the income drops
+from $1000*100 - $1000*25 = $75000 to $1000*50 - $1000*20 = $30000. Such drop
+will obviously get noticed by management who will attribute it not to loss of
+competence, intelligence and wisdom (they are usually unable to assess
+<a href="/articles/The-Psychological-Reasons-for-Software-Project-Failure">competence of programmers</a>),
+but to <a href="https://en.wikipedia.org/wiki/Social_loafing">social loafing</a>,
+because they will assume that 20 programmers (a.k.a "developer resources") should
+be able to deliver about 80 unit of change per year. The most often taken action
+is a more rigorous control achieved by the introduction of heavier
+<a href="https://en.wikipedia.org/wiki/Software_development_process">software development process</a>
+administered by more managers. This increases overall population and cost, and
+causes rising social inequality as overpopulated management tends to seek savings
+by replacing costly developers with cheaper ones (usually by outsourcing).
+This makes the codebase erode even more and the vicious circle closes as depicted in Figure 4.</p>
+<figure>
+<img src="extended_vicious_circle.png" alt="extended vicious circle"/>
+<figcaption>Figure 4. An extended vicious circle.</figcaption>
+</figure>
+<p>According to Diamond, environmental destruction was an enabler and amplifier
+for other impacts. I also do share this opinion and claim that codebase and
+developer erosion is an enabler which makes the software company more vulnerable
+to other impacts described further.</p>
+</section>
+<section>
+<h3>Change of Climate</h3>
+<p>The second reason for societal collapse discussed by Diamond is climate change.
+Usually, the most impacting change was a drought impacting food production.
+In the case of the Greenlandic Norse, on the other hand, it was global cooling
+known as the <a href="https://en.wikipedia.org/wiki/Little_Ice_Age">Little Ice Age</a>,
+which not only reduced their ability to harvest crops and raise animals, but also
+interrupted trade with continental Europe as sailing the north Atlantic became a
+challenge. In my opinion, the changes of climate are an equivalent of technological
+shifts, which we have been able to observe throughout the last 50 years.
+From the era of mainframes &amp; terminals, we moved to workstations &amp; servers
+just to go Web &amp; mobile afterwards. These shifts imposed stress on software
+companies to adapt their existing solutions to the new reality, just like climate
+change requires the accommodation of old methods of farming and herding to
+prosper under new conditions. In addition to technological shifts, regulatory
+changes play a similar function as they can make entire branches of the economy
+literally disappear overnight.</p>
+<p>Neither societies nor software companies can control "climate changes".
+They can only react to them. A society cultivating fertile soil with clean water
+surplus has more resources to successfully adapt to a new climate. Analogically,
+a software company with healthy codebase and competent programmers has higher
+chances to adapt to new technological situation than its competitors and, as a
+result, survive.</p>
+</section>
+<section>
+<h3>Rise of Hostile Neighbors</h3>
+<p>The rise of hostile neighbors is an ever present threat to every society.
+Invasions of hordes of vicious "barbarians" have been reasons of
+<a href="https://en.wikipedia.org/wiki/Fall_of_the_Western_Roman_Empire">crisis and collapses in the past</a>.
+Analogically, the rise of competition can cause software company to collapse if
+it is not able to respond accordingly. A classic example is Microsoft killing
+Netscape during the <a href="https://en.wikipedia.org/wiki/Browser_wars">first browser war</a>.
+Another example can be the rise of open source products which can be "devastating"
+for entire sectors, like the rise of <a href="https://en.wikipedia.org/wiki/Git">Git</a>
+which snatched considerable market share and remodeled the industry. Software
+companies cannot effectively control hostile neighbors unless they buy them.
+If buying is impossible, then the quality of existing codebase plays huge role
+in company’s survival. A society cultivating a fertile soil with surplus of water
+can produce more food to feed soldiers, and in effect can afford more soldiers
+to resist invasion. Analogically, a software company with the healthier codebases
+and skilled developers has higher chance to adapt quickly and keep up or even
+outpace hostile competitors.</p>
+</section>
+<section>
+<h3>Collapse of Friendly Neighbors</h3>
+<p><a href="https://en.wikipedia.org/wiki/Henderson_Island_(Pitcairn_Islands)">Henderson Island</a>
+population is one which Jared Diamond describes as the victim of the collapse of
+friendly neighbors. The people of Henderson, occupying a barren piece of land in
+the middle of Pacific lived mainly by fishing and depended on imports of quality
+stone (for manufacturing tools and fishing utensils) and lumber (to build boats)
+from two other Pacific islands of
+<a href="https://en.wikipedia.org/wiki/Mangareva">Mangareva</a> and
+<a href="https://en.wikipedia.org/wiki/Pitcairn_Islands">Pitcairn</a>.
+When the imports stopped for reasons independent of Henderson islanders,
+the population was left with no means to sustain fishing and went extinct.</p>
+<p>A software company can fall victim to a collapse of business partners,
+suppliers (e.g., critical library vendors) or even underlying platform
+(<a href="https://en.wikipedia.org/wiki/Symbian">Symbian</a>,
+<a href="https://en.wikipedia.org/wiki/Windows_Phone">Windows Phone</a>).
+A company can control this to some extent if it is able to buy collapsing supplier
+(e.g., Oracle buying Sun in order to preserve Java), but often it is a prohibitively
+costly option. Again, a healthy codebase and skilled developers enable higher
+adaptive abilities, which a company can use to replace no longer maintained
+subcomponents or port software to a new platform.</p>
+<p>A special case for the collapse of a friendly neighbor is the a collapse of
+major customer. This can happen if the company hasn’t diversified its customer
+base enough. This is often the result of
+<a href="https://en.wikipedia.org/wiki/Cash_cow">cash cow</a> syndrome when a
+software company optimizes its product for one "strategic" customer at the cost
+of undermining the product’s competitiveness and ability to suit other customers
+as well. If the codebase is not kept in modular state, with the customer specific
+features implemented as pluggable behavior the loss of major customer can become lethal.</p>
+</section>
+<section>
+<h3>Inability to Change</h3>
+<p><i>"It is not the strongest of the species that survives, or the most
+intelligent, but the one most responsive to change."</i><br>
+― Leon C. Megginson</p>
+<p>Sometimes a society (or a software company) having the inner ability to resist
+incoming collapse may fail to adapt for various social reasons I shall describe.</p>
+<h4>Failure to Anticipate Threat</h4>
+<p><i>"Groups may do disastrous things because they failed to anticipate a problem
+before it arrived [because] they have had no prior experience with such problems
+and so may not have been sensitized to the possibility."</i> The growth of software
+industry since its beginning
+<a href="https://blog.cleancoder.com/uncle-bob/2014/06/20/MyLawn.html">has been exponential</a>,
+causing its constant immaturity and collective amnesia as most
+<a href="/articles/The-Psychological-Reasons-for-Software-Project-Failure">practitioners
+have not been in the industry long enough</a> to experience past failures and
+draw conclusions from them. This comes with unbalanced concentration on
+technological novelties (so typical for the young) at the cost of neglecting
+the history of technology and learning from past successes and mistakes.</p>
+<p>This phenomenon has two aspects. From a technical perspective, it is
+predominately caused by a failure of software architects (understood as a role,
+not as a job title) to spot code, architecture and documentation rot, as well as
+incoming technological shifts. This is tragically ironic, since architect’s job
+is to <b>predict and avoid future problems</b> by preparing existing product to
+handle them gracefully. From a managerial perspective, it is caused by upper
+management's failure to anticipate dangerous
+<a href="https://martinfowler.com/articles/is-quality-worth-cost.html">consequences
+of low technical quality</a>, if they are not technically educated themselves.
+Additionally, failure to understand what
+<a href="/articles/Software-Development-as-a-Research-in-Domain-of-Value">software development actually is</a>
+may lead to the application of dysfunctional organizational patterns which make
+sense for other branches of industry, but
+<a href="https://en.wikipedia.org/wiki/Waterfall_model">fail for software development</a>.</p>
+<h4>Failure to Perceive Threat</h4>
+<p><i>"After a society has or hasn’t anticipated a problem before it arrives
+[it can fail] to perceive a problem that has actually arrived. There are at least
+three reasons for such failures, all of them common in the business world and in academia."</i></p>
+<p><i>"First, the origins of some problems are literally imperceptible.
+"</i> The commonly used <a href="https://www.youtube.com/watch?v=Bl30X0MvT0I">SCRUM method can deceive both managers and developers</a>.
+When the product is young and small each sprint usually ends with success, as
+even bad strategic and tactic decisions exert low "friction" since the "mass"
+of the code is still low. As time passes, and product grows, sprints still may
+succeed when simple, low risk features are picked for implementation
+(consciously or not but often based on their cost instead of
+<a href="https://www.codeproject.com/Articles/5250053/Software-Development-as-a-Research-in-Domain-of-Va">value</a>).
+This situation may last undetected until some kind of shift in product direction
+is required. When it happens, a series of successful sprints quickly turns into a
+<a href="https://en.wikipedia.org/wiki/The_Mythical_Man-Month">tar pit</a> (see Figure 5).</p>
+<figure>
+<img src="deceitful_scrum.png" alt="deceitful scrum"/>
+<figcaption>Figure 5. Deceitful SCRUM.</figcaption>
+</figure>
+<p><i>"Another frequent reason for failure to perceive a problem after it arrived
+is distant managers, a potential issue in any large society or business."</i>
+This problem has three common facets. First is a geographical distance between
+development teams and managers and/or architects. In this case, a distant manager
+(or architect) has a limited capability to obtain accurate information about the
+current state of the product in order to implement proper corrective actions.
+This usually happens in case of development outsourcing, especially if the time
+difference between locations is large (ironically, for this exact reason India
+is the worst possible outsourcing location for Northern American companies).
+Second, multilayered organizations tend to develop a
+<a href="https://brucefwebster.com/2008/04/15/the-wetware-crisis-the-themocline-of-truth/">thermocline of truth</a>
+placed at middle management layers. In this situation, honest information about
+state of affairs is suppressed and replaced with positive illusion of success as
+it bubbles up the management structure. This makes the upper management distant
+from the "site," even if they actually occupy the same physical location.
+Third, non-technical managers and non-coding, software architects (sic!)
+comfortably shielded within their <a href="https://en.wikipedia.org/wiki/Ivory_tower">ivory towers</a>
+may have no idea about rotting code base because they simply don’t keep an eye on it.
+In this case, codebase is a "site," which the manager (or architect) is distant
+from. <i>"The opposite of failure due to distant managers is success due to
+on-the-spot managers."</i> <a href="/articles/The-Surgical-Team-in-XXI-Century">The Surgical Team" in XXI Century</a>
+is a proposed solution utilizing on-the-spot management.</p>
+<p><i>"Perhaps the commonest circumstance under which societies fail to perceive
+a problem is when it takes the form of a slow trend concealed by wide up-and-down
+fluctuations."</i> It may be hard to spot incoming climate change when droughts
+are interleaved with rainfalls. Soil erodes one grain at a time, source code
+erodes one line at a time and market share diminishes one percent at a time.
+It can be difficult to spot creeping technical debt. For novice (or even senior)
+developers, it may be caused by so called
+<a href="https://en.wikipedia.org/wiki/Creeping_normality">creeping normalcy</a>,
+since they might have never been actually exposed to well-engineered solution
+and assume that this is just the way things should be. On the other hand,
+management may fail to recognize rising competitor, failing partner or a shift
+in market demands if they are slow, until some tipping point gets reached
+(then things start to change astonishingly fast).</p>
+<h4>Failure to Act</h4>
+<p><i>"The third stop on the road map of failure is the most frequent, the most
+surprising and requires the longest discussion because it assumes such a variety
+of forms. Contrary to what [everyone] would have expected, it turns out that
+societies often fail even to attempt to solve a problem once it has been
+perceived."</i> Big companies have slow reaction times caused by complexity
+of communication paths. Additionally, they tend to
+<a href="https://www.youtube.com/watch?v=89Vpqm2IaPE">accumulate conservative
+and consciousness people over time</a>, who are good in optimizing for stable
+environment. When the environment changes, these two factors combined cause them
+to keep heading in the wrong direction even if it is obvious to everybody around.</p>
+<h5>"Rational Behavior"</h5>
+<p><i>"Many of the reasons for such failure fall under the heading of what
+economists and other social scientists term ‘rational behavior’, arising from
+clashes of interest between people. That is, some people may reason correctly
+that they can advance their own interests by engaging in behavior harmful to
+other people. Scientists term such behavior rational precisely because it employs
+correct reasoning, even though it may be morally reprehensible."</i></p>
+<p>One of the most common manifestations of "rational behavior" is short term
+thinking, when people are concentrated on their positive image presented to their
+supervisors and achieved with a series of short term immediate successes.
+This approach is not only "rational" but actually rational from perpetrator’s
+point of view. The inherent intangibility of software development makes it
+difficult to properly evaluate one’s contributions, so "image of proficiency"
+is often the only basis of one’s position and salary. This behavior is presented
+throughout an entire organizations from developers (Sprint vs product), through
+middle management (project vs product) to upper management
+(quarterly report vs sustainable business).
+<a href="https://www.codeproject.com/Articles/5279276/The-Surgical-Team-in-XXI-Century">The Surgical Team" in XXI Century</a>
+is a proposed solution to mitigate this phenomenon at least at development level.</p>
+<p>Another manifestation of this phenomenon is the proliferation of
+<a href="/articles/The-Psychological-Reasons-for-Software-Project-Fai">bandit programmers</a>
+who are consciously not willing act ("not my problem" approach).
+This is often caused by deeper rot of <a href="/articles/The-Oath-Triangle">moral and economical values</a>
+underpinning the company which promote <a href="https://en.wikipedia.org/wiki/Social_loafing">social loathing</a>.
+The "surgical team" approach helps fighting it by imposing ownership and
+transparency but cannot fix the deeper problem.</p>
+<p>Yet another manifestation of "rational thinking" is the lack of customer management.
+If principal customers do not have a long term stake in keeping the software
+company alive, it is "rational" for them to extract the maximum value from it
+and then abandon its corpse. If the software company is not able to manage
+customers’ demands, its product’s code base and architectural integrity will
+end up torn apart by contradictory customer demands.</p>
+<h5>Irrational Behavior</h5>
+<p><i>"In contrast to so-called rational behavior, other failures to attempt to
+solve perceived problems involve what social scientists consider 'irrational behavior':
+i.e. behavior that is harmful for everybody. Such irrational behavior often
+arises when each of us individually is torn by clashes of values: we may ignore
+a bad status quo because it is favored by some deeply held value to which we cling." </i></p>
+<p>The strongest irrational behavior I personally observed in software companies is
+<a href="https://en.wikipedia.org/wiki/Sunk_cost">sunk cost fallacy</a>.
+Most of the time software companies stubbornly stick to patching and "reusing"
+their existing software (or software components) just because they have invested
+in them so much in the past, even though developing new software or more often
+replacing it with off-the-shelf solution would make more sense. This is especially
+irrational nowadays with the abundance of literally "free as beer" open source software.</p>
+<p>The second most irrational behavior is a failure to
+<a href="https://en.wikipedia.org/wiki/Cannibalization_(marketing)">cannibalize</a>
+a company’s current
+<a href="https://en.wikipedia.org/wiki/Cash_cow">cash cow</a> product, when
+facing exploding development costs, depleted growth options, or rising competition
+(though some companies manage to do it
+<a href="https://medium.com/@herbcaudill/lessons-from-6-software-rewrite-stories-635e4c8f7c22">successfully</a>).
+This is along with sunken cost fallacy is heavily grounded in
+<a href="https://en.wikipedia.org/wiki/Loss_aversion">loss aversion</a> phenomenon
+uniformly presented by human beings.</p>
+<p>Comparatively, the most visible irrational behavior of entire companies is a
+reluctance to change by clinging to values which no longer make sense.
+<a href="https://en.wikipedia.org/wiki/Greenlandic_Norse">Greenlandic Norse</a>
+chose to stick to their European lifestyle at the dawn of a
+<a href="https://en.wikipedia.org/wiki/Little_Ice_Age">little ice age</a> and
+died instead of adopting <a href="https://en.wikipedia.org/wiki/Inuit">Inuit</a>
+lifestyles and surviving. Similarly, some software companies facing a
+"climate change" may still try to operate as if the change was irrelevant
+("we are desktop software company, not a web site", "we are a product based
+company, not a service company", "we are a hardware company not a software company").
+Moreover, they often put effort to boost their current activities by employing
+various "effectiveness initiatives," which only makes them move faster in the
+wrong direction towards eventual collapse.</p>
+<h4>Failure to Fix</h4>
+<p><i>"Finally, even after a society has anticipated, perceived, or tried to
+solve the problem, it may still fail for obvious possible reasons. The problem 
+may be beyond our present capabilities to solve, a solution may exist but be
+prohibitively expensive, or our effort may be too little and too late. Some
+attempted solutions backfire and make problem worse."</i></p>
+<p>When the company faces developer erosion caused by codebase erosion as described
+preciously, it becomes <b>brain dead</b>. With all best developers gone, the
+remaining crowd may not have enough cognitive power (or simply motivation) to
+properly implement the required corrective fixes, so the rewritten code may end
+up being as convoluted as the original one and may eventually be scrapped. Even
+if codebase rot does not cause developer rot (which I suspect is unlikely), the
+cost of fixing or rewriting does not follow a linear function but an exponential
+one, with average exponent value being around 1.5 (see
+<a href="https://en.wikipedia.org/wiki/The_Mythical_Man-Month">Brooks</a>).
+To prove it, let's do a thought experiment. If we had a program of 100 lines
+of code and each line was <b>independent from any other line</b> (very improbable),
+then changing one line of code would not require any other changes. Therefore,
+changing 10 lines of code would take proportionally 10 times longer than changing
+a single line. This means that the effort would follow a linear function for
+the number of lines of code. If, on the other hand, if each line of the program
+<b>depending on every other line</b> (again very improbable), then changing one
+line of code would require changing all other lines of code as well. In that case,
+changing 10 lines of code would require changing all other lines 10 times, which
+gives 100/10*100 = 1002/10 which is an exponential function. Real programs
+manifest interdependence in between these extremes (that’s why exponent 1.5 is
+often assumed), but convoluted design, sloppy programming and hacks move this metric,
+and eventually cost, closely towards quadratic function. Additionally, 
+<a href="/articles/The-Psychological-Reasons-for-Software-Project-Fai">the incompetence of developers</a>
+can raise the exponent even further practically without limit (as depicted below).</p>
+<figure>
+<img style="max-width: 380px" src="cost_of_rewrite.png" alt="cost of rewrite"/>
+<figcaption>Figure 6. Cost of refactoring/rewrite in function of program size.</figcaption>
+</figure>
+<p>This is also the reason why ambitious rewrites often backfire with cost
+explosion feature abandonment, performance problems and eventually market loss
+(see <a href="https://medium.com/@herbcaudill/lessons-from-6-software-rewrite-stories-635e4c8f7c22">Netscape</a>).</p>
+<p>Another failure to fix may be caused by management’s misunderstanding or total
+lack of understanding of the
+<a href="/articles/Software-Development-as-a-Research-in-Domain-of-Value">software development process</a>
+(brain death by ignorance). This happens in (astonishingly abundant) companies
+operating according to "Routine" pattern, described by
+<a href="https://en.wikipedia.org/wiki/Gerald_Weinberg">Gerald M. Weinberg</a>
+as <a href="https://www.amazon.com/How-Software-Built-Quality-Book-ebook/dp/B004KAB9RO">
+hyper-concentrated on process, cultivating a myth of "superhero manager",
+and always looking for silver bullets</a>. These organizations respond to every
+crisis with organizational structure adjustments and process changes in the hope
+that these will miraculously fix technical issues. At the same time, they actively
+prevent developers to handle these issues by not willing to provide required
+time and resources.</p>
+</section>
+<section>
+<h2>Beyond Diamond’s Framework</h2>
+<p>Though not specified explicitly in Diamond's book, some societies fail because
+they establish themselves in inherently unsustainable areas, where the hostile
+environment conditions are offset by some precious natural resource, which can
+be traded for other goods like food, building materials, tools, etc. American
+<a href="https://en.wikipedia.org/wiki/Ghost_town#United_States">ghost towns</a>
+once prospering from gold mining or modern oil-rich
+<a href="https://en.wikipedia.org/wiki/Saudi_Arabia#Economy">Saudi Arabia</a>
+come to mind as direct examples. For software companies, such situations happen
+when they establish a business model that is not sustainable in the long-term.
+One such model (which actually worked quite well for decades for various reasons)
+is the one based on selling features (or entire releases). The problem with this
+model is that it is governed by the law of diminishing
+<a href="https://en.wikipedia.org/wiki/Marginal_utility">marginal utility</a>
+(where the revenue extracted from features diminishes with time as oil or gold
+get eventually depleted). Let’s take, for example, a word processor application.
+Being able to edit paragraphs in a
+<a href="https://en.wikipedia.org/wiki/WYSIWYG">WYSIWYG</a> manner is a core
+feature of big value for customers and stimulates sales, but being able to add
+watermarks to every page is not valuable enough for the majority of existing
+users to consider the cost of upgrade. On the contrary, the subscription model
+seems much more sustainable. In this model, a customer obtains value every time
+he/she runs software, so it seems fair to periodically share some of it with
+the software reactors. A side advantage of this is that software creators are
+not forced to pump out new features just to be able to sell, and can improve
+non-visible qualities of the product as well while still being profitable.</p>
+<p>Other reasons of societal collapses not mentioned by Diamond, but known to
+human kind, are natural disasters, with probably the best example of
+<a href="https://en.wikipedia.org/wiki/Pompeii#Eruption_of_Vesuvius">ancient Pompeii</a>.
+Software companies do not seem to be susceptible to natural disasters like floods,
+earthquakes or fire, thanks to off-site backups (if done systematically) and
+evacuation procedures as well as a very low dependence on physical assets like
+computers (easily replaceable) or buildings (remote working).</p>
+<p>The last reason of societal collapse what comes to mind is purely political.
+Just as societies may become governed by malevolent dictators bringing demise
+to their citizens (like <a href="https://en.wikipedia.org/wiki/Pol_Pot">communist Cambodia</a>),
+software companies <b>may</b> fall pray of blinded, hostile and self-serving top
+level managers that bring them to decay. Nevertheless, I suspect that such
+situations are extremely seldom compared with all the factors mentioned so far.</p>
+</section>
+<section>
+<h2>Conclusions</h2>
+<p>Considering all the above, I think that collapse is natural and inevitable
+default end to any software company which blindly does what seems most natural:
+pursuit unconditional growth and
+<a href="/articles/Software-Development-as-a-Research-in-Domain-of-Va">unconditional profit</a>.
+Both societies and companies need to actively and systematically act to prevent
+collapse (just as the people of
+<a href="https://en.wikipedia.org/wiki/Tikopia">Tikopia</a> did for centuries by
+regulating agriculture, fishery and population).</p>
+<p>The problem with software companies compared with societies is that things go
+wrong orders of magnitudes faster. A lean startup enthusiastically following
+<a href="https://martinfowler.com/bliki/FlaccidScrum.html">flaccid SCRUM</a>,
+builds an initial product quickly by adding many features every sprint.
+It gains market share while accumulating technical debt and suddenly it hits
+the wall. In response to that, it brings more people and any
+<a href="https://en.wikipedia.org/wiki/The_Mythical_Man-Month">conceptual system coherence</a>
+dissolves as there are too many cooks to spoil the broth. Costs skyrocket,
+agility is lost and at the end the company bursts (and all of this happens
+within the period of years, not decades). Figure 7 summarizes this process by
+presenting mutual impacts of discussed phenomena.</p>
+<figure>
+<img src="interdependence_of_factors.png" alt="interdependence of factors"/>
+<figcaption>Figure 7. Interdependence of collapse factors (colors are irrelevant). 
+Every arrow points the direction of positive impact (amplification).
+Every time and arrow is bidirectional or a loop in the graph is formed a positive
+feedback loop forms and the company gets destabilized at exponential pace
+which may end up with collapse.</figcaption>
+</figure>
+<p>In order to draw a lesson form all the gloomy stories, Jared Diamond also
+analyzed few societies which actually managed to survive and sustain themselves
+for long periods of time. This brought him to identify two crucial choices
+distinguishing the past societies that survived from those that failed.
+<i>"The courage to practice long-term thinking and to make bold, courageous,
+anticipatory decisions at a time when problems have become perceptible but before
+they have reached crisis proportions"</i>, and <i>"the courage to make painful
+decisions about values";</i> to decide <i>"which of the values that formerly
+served a society well can continue to be maintained under new changed circumstances"</i>,
+and <i>"which of these treasured values must instead be jettisoned and replaced
+with different approaches"</i>. I’m inclined to think this applies to software
+companies as well.</p>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" aria-hidden="true" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
+
+
+
+
+
