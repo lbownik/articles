@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linkset Gets An Event Bus Functionality</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+pre {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffe8;
+    line-height: 1.1;
+}
+code {
+    color: #905;
+}
+header {
+    color: #808080;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject in 2010</p>
+</header>
+<main>
+<article>
+
+<section>
+<h1>Linkset Gets An Event Bus Functionality</h1>
+</section>
+<section>
+<h2>Disclaimer</h2>
+<p>This project is obsolete since Java 8.</p>
+</section>
+<section>
+<h2>Introduction</h2>
+<p>When I created <em>LinkSet</em>
+(<a href="http://github.com/lbownik/linkset" target="_blank">github.com/lbownik/linkset</a>)
+I thought about listeners, but after some time I realized that the same mechanism
+can be used to create simple to use event buses.</p>
+</section>
+<section>
+<h2>Working with Event Buses</h2>
+<p>If you want to find out how to use a basic Linkset functionality, please read
+the <a href="/articles/LinkSet–An-Alternative-Approach-to-Events-Java">previous article</a>.</p>
+<h3>An Event</h3>
+<p>In order to use an event bus, you need to declare an event type. An event can
+be of any type. It doesn't need to implement any interface or subclass any class.
+It can be any Java object, even as simple as this...</p>
+<pre>
+<code>
+package package com.mycompany.project1;
+
+public class Event {
+
+}
+</code>
+</pre>
+<h3>Simple Event Bus</h3>
+<p>The code below shows how to implement a class that can emit events.</p>
+<pre>
+<code>
+package com.mycompany.project1;
+
+import org.linkset.DefaultListenerManager;
+import org.linkset.ListenerManager;
+import org.linkset.MethodPointer;
+
+public class EventSource {
+
+    public static EventBus eventBus = new SimpleEventBus();   
+    
+    public void fireEvents() {
+        
+        eventBus.fire(new Event());
+    }
+}
+</code>
+</pre>
+<p>The class declares a <code>static</code> event bus object and then fires an
+event. It doesn't need any runtime or compilation support to work.</p>
+<h3>Event Handler</h3>
+<p>The following code shows how to implement a class that provides methods that
+listen to events.</p>
+<pre>
+<code>
+package com.mycompany.project1;
+
+import org.linkset.HandlerMethod;
+import org.linkset.MethodPointer;
+
+public class EventHandler {
+
+    public EventHandler() {
+
+        EventSource.eventBus.add(Event.class, this, "eventHandler");
+    }
+
+    @HandlerMethod(id = "eventHandler")
+    private void eventHandler(final Event event) {
+
+        System.out.println("Event handled.");
+    }
+}
+</code>
+</pre>
+<p>The class declares a method that handles an event and registers itself as a
+handler of a particular type of events with a single line...</p>
+<pre>
+<code>
+EventSource.eventBus.add(Event.class, this, "eventHandler");
+</code>
+</pre>
+<h3>Hierarchy Aware Event Bus</h3>
+<p><em>LinkSet</em> makes it possible to utilize an event type hierarchy information.
+If you want, for example, to monitor some set of event types, you can register
+an event handler that handles all events that are subtypes of a particular type.</p>
+<p>The code below introduces a sub-event...</p>
+<pre>
+<code>
+package package com.mycompany.project1;
+
+public class SubEvent extends Event {
+
+}
+</code>
+</pre>
+<p>... an event source declared an event hierarchy aware event bus ...</p>
+<pre>
+<code>
+package com.mycompany.project1;
+
+import org.linkset.DefaultListenerManager;
+import org.linkset.ListenerManager;
+import org.linkset.MethodPointer;
+
+public class EventSource {
+
+    public static EventBus eventBus = new HierarchyAwareEventBus();   
+    
+    public void fireEvents() {
+        
+        eventBus.fire(new SubEvent());
+    }
+}
+</code>
+</pre>
+<p>... and an event target declares separate handlers for sub- and supertype of events.</p>
+<pre>
+<code>
+package com.mycompany.project1;
+
+import org.linkset.HandlerMethod;
+import org.linkset.MethodPointer;
+
+public class EventHandler {
+
+    public EventHandler() {
+
+        EventSource.eventBus.add(Event.class, this, "monitor");
+        EventSource.eventBus.add(Event.class, this, "subEventHandler");
+    }
+
+    @HandlerMethod(id = "subEventHandler")
+    private void eventHandler(final SubEvent event) {
+
+        System.out.println("SubEvent handled.");
+    }
+    
+    @HandlerMethod(id = "monitor")
+    private void eventMonitor(final Event event) {
+
+        System.out.println("Event monitored");
+    }
+}
+</code>
+</pre>
+<p>Every time a <code>SubEvent</code> is fired, both handlers will be invoked.</p>
+</section>
+<section>
+<h2>Summary</h2>
+<p><em>LinkSet</em> is a little experiment with a light, dynamic approach to
+Java listeners (and event buses now).<br>
+If you like it... enjoy using it... and report bugs at
+<a href="http://github.com/lbownik/linkset" target="_blank">github.com/lbownik/linkset</a>.</p>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" aria-hidden="true" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
+
+
+
+
+

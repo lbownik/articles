@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LinkSet – An Alternative Approach to Events Java</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+pre {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffe8;
+    line-height: 1.1;
+}
+code {
+    color: #905;
+}
+header {
+    color: #808080;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject in 2010</p>
+</header>
+<main>
+<article>
+
+<section>
+<h1>LinkSet – An Alternative Approach to Events Java</h1>
+</section>
+<section>
+<h2>Disclaimer</h2>
+<p>This project is obsolete since Java 8.</p>
+</section>
+<section>
+<h2>Introduction</h2>
+<p><em>LinkSet</em> is a tiny library created in order to relieve programmers
+from declaring listener interfaces. It utilizes Java 5 features and was designed
+to be a drop in replacement for a conventional “listener interface + anonymous
+class” solution.</p>
+<p>Java is a great language, but it lags behind in the area
+of listeners. Every time I did some programming in C#, I thought: "I wish Java
+had delegates." I also liked the Qt’s signal/slot approach. Some time ago,
+I thought: "Can I create something cleaner and easier to use than those syntactically
+horrible anonymous classes?" This way <em>LinkSet</em>
+(<a href="http://github.com/lbownik/linkset" target="_blank">github.com/lbownik/linkset</a>)
+was born. LinkSet is a little library that utilizes Java 5 features to provide
+a simple to use mechanism of listeners that doesn't require either listener
+interfaces, or anonymous classes.</p>
+</section>
+<section>
+<h2>Features of LinkSet</h2>
+<p>When I was designing <em>LinkSet</em>, I wanted it to be:</p>
+<ol>
+    <li>Simple to use - the usage of a library should impose as little programming
+        effort as possible. This means: no listener interfaces required and no
+        special build steps needed.</li>
+    <li>Flexible - both instance and static methods can be event handlers.</li>
+    <li>Noninvasive – it does not require an event handling object to implement
+        any particular interface and the event handling method can be <code>private</code>.</li>
+    <li>Easy to learn – it consists of only a few intuitive classes to use</li>
+    <li>Small and reasonably fast</li>
+    <li>Free - LGPL license</li>
+</ol>
+<p>I hope that I met those requirements.</p>
+</section>
+<section>
+<h2>Working with <em>LinkSet</em></h2>
+<p>To get started with LinkSet, you need to go to the project’s website
+(<a href="http://github.com/lbownik/linkset" target="_blank">github.com/lbownik/linkset</a>)
+and download the jar file. Then it is enough to include it into your project’s class path.</p>
+<h3>Event Source</h3>
+<p>LinkSet was designed to simplify the development of both event source and event
+handler classes. The following code presents a class that is a source of events.</p>
+<p>This code shows how to implement a class that can be observed by listeners.</p>
+<pre>
+<code>
+package com.mycompany.project1;
+
+import org.linkset.DefaultListenerManager;
+import org.linkset.ListenerManager;
+import org.linkset.MethodPointer;
+
+public class EventSource {
+
+    // a multi-listener manager
+    private final DefaultListenerManager clickListeners = 
+       new DefaultListenerManager();
+    // a single listener pointer - useful when a return value is
+    // needed
+    private MethodPointer vetoableListener;
+
+    // some constants
+    public final static int LeftButton = 0;
+    public final static int RightButton = 1;
+
+    public ListenerManager clickdListeners() {
+        
+        return this.clickListeners;
+    }
+
+    public void setVetoableListener(MethodPointer pointer) {
+
+        this.vetoableListener = pointer;
+    }
+
+    public void doStuff() throws Exception {
+
+        //fire click event
+        this.clickListeners.invokeAll(LeftButton);
+
+        // check if we can change state if we want to
+        final boolean canChangeState
+           (Boolean)this.vetoableListener.invoke();
+        if(canChangeState == true) {
+
+        }
+    }
+}
+</code>
+</pre>
+<p>The class declares two <code>private </code>fields. The <code>clickListeners</code>
+is an object of a class <code>DefaultListenerManager</code>.
+This class is a collection of event handlers that should be invoked when an event
+occurs. The method <code>clickListeners()</code> allows clients to connect its
+handlers via <code>add(…)</code> method defined in <code>ListenerManager</code>
+interface. This way a client can easily connect to an event source using the code like:</p>
+<pre>
+<code>
+Source.clickListeners().add(….);
+</code>
+</pre>
+<p>The second field called <strong><code>vetoableListener</code> 
+</strong>is an object of a <code>MethodPointer</code> class. This class implements
+an events handler method pointer that can be used when exactly one listener is
+required and its return value is necessary in following computations (like in
+a vetoable observer pattern). The method <code>setVetoableListener(...)</code>
+allows a client to set the pointer reference. The method <code>doStuff()</code>
+contains code that invokes all listeners with appropriate <code>invokeAll(…)</code> 
+and <code>invoke(…)</code>methods.</p>
+<h3>Event Handler</h3>
+<p>The following code shows how to implement a class that provides methods that listen to events.</p>
+<pre>
+<code>
+package com.mycompany.project1;
+
+import org.linkset.HandlerMethod;
+import org.linkset.MethodPointer;
+
+public class EventHandler {
+
+    private EventSource provider = new EventSource();
+    public EventHandler() {
+
+        // we set a reference to an object and handler method id
+        this.provider.clickdListeners().add(this, "clickListener");
+
+    // in case of static methods we need to pass a Class object
+    // reference
+    this.provider.setVetoablePointer(new
+        MethodPointer(this.getClass(), "canChange"));
+    }
+
+    @HandlerMethod(id = "clickListener")
+    private void clickListener(int button) {
+
+        System.out.println("Button click=" + button);
+    }
+
+    @HandlerMethod(id = "canChange")
+    private static boolean canChange() {
+
+        System.out.println("Can change?");
+        return false;
+    }
+    public static void main(String[] args) throws Exception {
+
+        EventHandler handler = new EventHandler();
+        handler.provider.doStuff();
+    }
+}
+</code>
+</pre>
+<p>The class declares two methods. A <code>private</code> instance method
+<code>clickListener(…)</code> is a method that is called when a click event occurs.
+It is annotated with a <code>HandlerMethod</code> annotation with a unique
+<code>id</code>. This <code>id</code> is used by:</p>
+<pre>
+<code>
+this.provider.clickdListeners().add(this, "clickListener");
+</code>
+</pre>
+<p>to point to a right method in a supplied object. The supplied identifier must
+be unique within a class scope, but can be reused in separate classes.</p>
+<p>The <code>private static</code> method <code>canChange()</code> is called
+when a <code>vetoableListener</code> is called. The code:</p>
+<pre>
+<code>
+this.provider.setVetoableListener(new MethodPointer(this.getClass(),"canChange"));
+</code>
+</pre>
+<p>set the pointer required by source object. It is notable that <em>LinkSet</em>
+requires a <code>Class</code> object as an event target when a <code>static</code>
+method’s <code>id</code> is supplied.</p>
+</section>
+<section>
+<h2>Summary</h2>
+<p><em>LinkSet</em> library is a little Perl that was formed through a constant
+irritation caused by Java’s default way of handling events. It is small, simple
+and easy to use. It is a drop in replacement that does not require any new syntax
+constructs like closures.</p>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" aria-hidden="true" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
+
+
+
+
+
