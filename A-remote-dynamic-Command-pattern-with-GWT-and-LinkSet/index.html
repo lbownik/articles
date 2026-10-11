@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A remote dynamic Command pattern with GWT and LinkSet</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, Sans-Serif;
+    font-size: 16px;
+    line-height: 1.4;
+    max-width: 1000px; 
+    margin: 0 auto;    /* centers horizontally */
+    padding: 20px 20px 20px 20px;   /* optional side padding */
+    text-align: justify;
+}
+h1 {
+    color: #124f06;
+}
+h2 {
+    color: #4789a4;
+}
+img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+}
+figcaption {
+    font-style: italic;
+}
+figure {
+  text-align: center;
+}
+
+figure img {
+  display: block;
+  margin: 0 auto;
+}
+.summary {
+    padding: 25px 0 15px 0;
+    font-style: italic;
+}
+pre {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffe8;
+    line-height: 1.1;
+}
+code {
+    color: #905;
+}
+header {
+    color: #808080;
+}
+footer {
+    border-top: 2px solid #808080;
+    padding-top: 10px;
+}
+</style>
+</head>
+<body>
+<header>
+<p>Originally posted on CodeProject in 2011</p>
+</header>
+<main>
+<article>
+
+<section>
+<h1>A remote dynamic Command pattern with GWT and LinkSet</h1>
+</section>
+<section>
+<h2>Disclaimer</h2>
+<p>This project is obsolete since Java 8.</p>
+</section>
+<section>
+<h2>Introduction</h2>
+<p><em>LinkSet</em> as described in the
+<a href="/articles/LinkSet%E2%80%93An-Alternative-Approach-to-Events-Java">previous article</a>
+is a tiny library created in order to relieve programmers from declaring listener
+interfaces. It utilizes Java 5 features, and was designed to be a drop-in replacement
+for a conventional “listener interface + anonymous class” solution. Previously,
+it had an <a href="/articles/Linkset-Gets-An-Event-Bus-Functionality">event bus support</a>,
+and now it supports a remote dynamic Command pattern.</p>
+<p><a href="http://en.wikipedia.org/wiki/Command_pattern">Command pattern</a> is
+a very useful solution, but it causes some problems when used in a distributed
+environment. When implemented in a
+<a href="http://en.wikipedia.org/wiki/Command_pattern#Examples">classical way</a>
+and performed over the wire, it causes almost all server code to reside on client
+side as well. It is unfavorable and often even impossible to implement when the
+client side uses a different technology than the server side (like JavaScript or Adobe Flex).</p>
+</section>
+<section>
+<h2>A solution</h2>
+<p>The most obvious way is to split the commands code from the execution code so
+that commands carry only a command name and data which can be easily transported
+over the wire. This solution raises, however, a different problem of easily
+dispatching commands on the server side. There is a
+<a href="/http://code.google.com/p/gwt-command-pattern/">solution</a> to that,
+but type safety causes makes it too complicated. I found that dropping type
+safety makes it easier and simpler.</p>
+</section>
+<section>
+<h2>Using LinkSet as a dynamic command dispatcher with a GWT application</h2>
+<p>There are only two classes that make the magic happen. First is a
+<code>CommandExecutor</code> class that takes care of the binding commands to
+methods, and second is an <code>Eexecutor</code> annotation that is used for
+marking methods.</p>
+<p>The class <code>CommandExecutor</code> has only one public constructor that
+takes a reference to an object containing methods that perform commands, and
+only one public method <code>execute</code> that causes real command execution to happen.</p>
+<p>The code below is an axample of a GWT RPC service that uses the LinkSet Command
+pattern support.</p>
+<h3>A command interface</h3>
+<p>This interface is needed if you want your client side to be type safe.</p>
+<pre>
+<code>
+public interface Command&lt;ReturnType extends Serializable&gt; extends Serializable{
+}
+</code>
+</pre>
+<h4>A service interface</h4>
+<pre>
+<code>
+@RemoteServiceRelativePath("rpcservice")
+public interface RPCService extends RemoteService {
+    public &lt;R extends Serializable&gt; R execute(
+      final Command&lt;R&gt; command) throws Throwable;
+}
+</code>
+</pre>
+<h4>An asynchronous service interface</h4>
+<pre>
+<code>
+public interface RPCServiceAsync {
+    public &lt;ReturnType extends Serializable&gt; void execute(
+            Command&lt;ReturnType&gt; command, AsyncCallback&lt;ReturnType&gt; callback);
+}
+</code>
+</pre>
+<h4>A servlet class</h4>
+<p>This is the only place where <strong>LinkSet is actually used</strong>.</p>
+<pre>
+<code>
+public class RPCServiceServlet extends RemoteServiceServlet 
+             implements RPCService {
+        
+    // Create an axecutor - the parameter is lamos always "this".
+    private final CommandExecutor executor = new CommandExecutor(this); 
+    
+    @SuppressWarnings("unchecked")
+    public &lt;ReturnType extends Serializable&gt; ReturnType execute(
+            final Command&lt;ReturnType&gt; command) throws Throwable {
+
+        // call executor and cast a return type.
+        return (ReturnType) this.executor.execute(command);
+    }
+    // Boilerplate  code ends here - the rest is Your application's logic.
+    
+    // The method is annotated with it's parameter's class (a command's class).
+    @Executor(cmdClass = InvalidateSession.class)
+    public Null invalidateSession(final InvalidateSession cmd) {
+
+        getThreadLocalRequest().getSession().invalidate();
+            // LinkSet cannot exetuce void methods.
+            // Use Null class or Object class as return type and return null.
+        return null; 
+    }
+
+    @Executor(cmdClass = ListUsers.class)
+    public ArrayList&lt;User&gt; listDomains(final ListUsers cmd) {
+
+        final ArrayList&lt;User&gt; result = new ArrayList&lt;User&gt;();
+        …
+        return result;
+    }
+}
+</code>
+</pre>
+<p>When a <code>CommandExecutor</code> object is created:</p>
+<pre>
+<code>
+CommandExecutor executor = new CommandExecutor(this);
+</code>
+</pre>
+<p>it scans its parameter's class, looking for annotated methods:</p>
+<pre>
+<code>
+@Executor(cmdClass = ListUsers.class)
+public ArrayList listDomains(final ListUsers cmd) {
+</code>
+</pre>
+<p>and creates a mapping between a command's class and a method.</p>
+<p>When the <code>execute</code> method is called:</p>
+<pre>
+<code>
+this.executor.execute(command);
+</code>
+</pre>
+<p>it calls the appropriate method assigned to its parameter's type (via Reflection).</p>
+<p>It is worth noting that LinkSet does not depend on any external library, and
+it does not enforce commands to subclass any particular class or implement any
+particular interface, so it is totally invisible to the client side of an
+application. It can be used not only with GWT, but also with Adobe Flex, EJB,
+RMI, and other frameworks.</p>
+</section>
+<section>
+<h2>Summary</h2>
+<p><em>LinkSet</em> is a little experiment with a light, dynamic approach to Java.
+If you like it .. enjoy using it .. and report bugs at
+<a href="http://github.com/lbownik/linkset" target="_blank">github.com/lbownik/linkset</a>.</p>
+</section>
+</article>
+</main>
+<footer>
+<p>
+Authored by <a href="https://pl.linkedin.com/in/lukasz-bownik">Lukasz Bownik</a>. Published under <a rel="license" data-spdx="CC-BY-4.0"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+<a rel="license" data-spdx="CC-BY-4.0" href="http://creativecommons.org/licenses/by/4.0/">
+<img style="width: auto;" aria-hidden="true" alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+</p>
+</footer>
+</body>
+</html>
+
+
+
+
+
